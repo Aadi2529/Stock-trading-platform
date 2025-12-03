@@ -1,0 +1,83 @@
+.universe-section {
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+
+.tech-blog {
+  margin-bottom: 5px;
+  color: #606060;
+  font-size: 14px;
+}
+
+.universe-title {
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.universe-subtitle {
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 40px;
+}
+
+/* GRID EXACT LIKE ZERODHA */
+.universe-grid {
+  row-gap: 60px;
+}
+
+/* LOGOS EXACT SIZE */
+.logo {
+  height: 55px;      /* Zerodha uses 55px logos */
+  width: auto;
+  display: block;
+  margin: 0 auto 20px;
+  object-fit: contain;
+}
+
+/* TITLES */
+.item-title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* DESCRIPTIONS */
+.item-desc {
+  text-align: center;
+  max-width: 340px;
+  margin: 0 auto;
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* BUTTON */
+.signup-btn {
+  background-color: #387ed1;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 4px;
+  font-size: 18px;
+  border: none;
+}
+
+.signup-btn:hover {
+  background-color: #2f6bb1;
+}
+
+/* MOBILE FIX - EXACT LIKE ZERODHA */
+@media (max-width: 576px) {
+  .logo {
+    height: 50px;
+  }
+
+  .universe-grid {
+    row-gap: 45px;
+  }
+
+  .item-desc {
+    max-width: 280px;
+  }
+}
