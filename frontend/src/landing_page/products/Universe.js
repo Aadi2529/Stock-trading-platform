@@ -14,7 +14,7 @@ const Universe = () => {
 
         {/* Zerodha Fund House */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/zerodhaFundhouse.png" className="logo" />
+          <img className="responsive logo" src="media/images/zerodhaFundhouse.png" alt="fundhouse" />
           <p className=" text-muted item-desc">
             Our asset management venture that is creating simple and transparent
             index funds to help you save for your goals.
@@ -23,7 +23,7 @@ const Universe = () => {
 
         {/* Sensibull */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/sensibullLogo.svg" className="logo" />
+          <img className="responsive logo" src="media/images/sensibullLogo.svg" alt="sensibull" />
           <p className=" text-muted item-desc">
             Options trading platform that lets you create strategies,
             analyze positions, and examine data points like open interest,
@@ -33,7 +33,7 @@ const Universe = () => {
 
         {/* Tijori */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/tijori.svg" className="logo" />
+          <img className="responsive logo" src="media/images/tijori.svg" alt="tijori" />
           <p className=" text-muted item-desc">
             Investment research platform that offers detailed insights
             on stocks, sectors, supply chains, and more.
@@ -44,7 +44,7 @@ const Universe = () => {
 
         {/* Streak */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/streakLogo.png" className="logo" />
+          <img className="responsive logo" src="media/images/streakLogo.png" alt="streak" />
           <p className=" text-muted item-desc">
             Systematic trading platform that allows you to create and
             backtest strategies without coding.
@@ -53,7 +53,7 @@ const Universe = () => {
 
         {/* smallcase */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/smallcaseLogo.png" className="logo" />
+          <img className="responsive logo" src="media/images/smallcaseLogo.png" alt="smallcase" />
           <p className=" text-muted item-desc">
             Thematic investing platform that helps you invest in diversified
             baskets of stocks or ETFs.
@@ -62,15 +62,12 @@ const Universe = () => {
 
         {/* Ditto */}
         <div className="col-12 col-md-4 item-box mt-5">
-          <img src="media/images/dittoLogo.png" className="logo" />
+          <img className="responsive logo" src="media/images/dittoLogo.png" alt="ditto" />
           <p className=" text-muted item-desc">
             Personalized advice on life and health insurance. No spam and no mis-selling.
           </p>
         </div>
-          <button
-            className="p-2 btn btn-primary fs-5 mb-5"
-            style={{ width: "18%", margin: "0 auto" }}
-          >
+          <button className="p-2 btn btn-primary fs-5 mb-5 hero-cta">
             Sign up for free
           </button>
       </div>

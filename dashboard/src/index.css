@@ -852,5 +852,15 @@ hr {
   font-weight: 500;
 }
 
+.status-executed {
+  color: rgb(72, 194, 55);
+  font-weight: 600;
+}
+
+.status-pending {
+  color: rgb(240, 140, 30);
+  font-weight: 600;
+}
+
 
 

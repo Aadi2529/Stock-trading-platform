@@ -13,12 +13,22 @@ const SellActionWindow = ({ uid }) => {
 
   const handleSellClick = async () => {
     try {
-      await axios.post("http://localhost:3002/newOrder", {
-        name: uid,
-        qty: Number(stockQuantity),
-        price: Number(stockPrice),
-        mode: "SELL",
-      });
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        "http://localhost:3002/newOrder",
+        {
+          name: uid,
+          qty: Number(stockQuantity),
+          price: Number(stockPrice),
+          mode: "SELL",
+        },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+
+      if (res && res.data && res.data.order) {
+        const order = res.data.order;
+        window.dispatchEvent(new CustomEvent("localOrderCreated", { detail: order }));
+      }
 
       // close the sell window via context
       generalContext.closeSellWindow();
@@ -62,13 +72,13 @@ const SellActionWindow = ({ uid }) => {
         </div>
       </div>
 
-      <div className="buttons">
+          <div className="buttons small-gap">
         <span>Margin required ₹140.65</span>
         <div>
-          <button type="button" className="btn btn-red" onClick={handleSellClick}>
+              <button type="button" className="btn btn-blue btn-compact" onClick={handleSellClick}>
             Sell
           </button>
-          <button type="button" className="btn btn-grey" onClick={handleCancelClick}>
+              <button type="button" className="btn btn-grey btn-compact" onClick={handleCancelClick}>
             Cancel
           </button>
         </div>

@@ -3,6 +3,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUsername } from "../hooks/useUsername";
 
+// Allow collapsing menu on mobile via simple state (overlay handled by CSS)
+const MobileToggle = ({ onToggle }) => (
+  <button className="btn btn-compact d-show-mobile mobile-menu-toggle" onClick={onToggle} aria-label="Open menu">
+    ☰
+  </button>
+);
+
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -21,7 +28,8 @@ const Menu = () => {
 
   return (
     <div className="menu-container">
-      <img src="logo.png" style={{ width: "50px" }} />
+      <img src="logo.png" className="menu-logo d-hide-mobile" />
+      <MobileToggle onToggle={() => document.body.classList.toggle("mobile-side-open")} />
       <div className="menus">
         <ul>
           <li>

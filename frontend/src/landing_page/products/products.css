@@ -1,0 +1,18 @@
+/* Products page responsive adjustments */
+.container .row .col-6 img.responsive{max-width:100%;height:auto}
+@media (max-width:768px){
+  .container .row .col-6{padding:12px}
+  .container .row .col-6 h1{font-size:1.2rem}
+  .container .row .col-6 p{font-size:0.95rem}
+}
+@media (max-width:480px){
+  .container .row .col-6{padding:8px}
+}
+
+.product-links{display:flex;gap:24px}
+.product-link{color:#387ed1;text-decoration:none;font-weight:600}
+.store-badge{display:inline-block;margin-right:24px}
+@media(max-width:768px){
+  .product-links{flex-direction:column;gap:8px}
+  .store-badge{margin-right:0}
+}

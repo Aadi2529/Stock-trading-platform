@@ -9,6 +9,7 @@ const Login = () => {
   const [emailOrMobile, setEmailOrMobile] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -20,8 +21,19 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    if (!emailOrMobile || !password) {
-      setError("Email/Mobile and password are required");
+    // Synchronous validation
+    const errors = {};
+    if (!emailOrMobile) errors.emailOrMobile = "Email or mobile is required";
+    else if (loginType === "email") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrMobile)) errors.emailOrMobile = "Invalid email address";
+    } else {
+      if (!/^\d{10}$/.test(emailOrMobile)) errors.emailOrMobile = "Mobile must be 10 digits";
+    }
+    if (!password) errors.password = "Password is required";
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError("Please fix the highlighted errors before proceeding");
       setLoading(false);
       return;
     }
@@ -101,18 +113,31 @@ const Login = () => {
               {loginType === "email" ? "Email Address" : "Mobile Number"}
             </label>
             {loginType === "email" ? (
-              <input
-                type="email"
-                id="emailOrMobile"
-                className="form-control"
-                placeholder="Enter your email address"
-                value={emailOrMobile}
-                onChange={(e) => {
-                  setEmailOrMobile(e.target.value);
-                  setError("");
-                }}
-                required
-              />
+              <>
+                <input
+                  type="email"
+                  id="emailOrMobile"
+                  className="form-control"
+                  placeholder="Enter your email address"
+                  value={emailOrMobile}
+                  onChange={(e) => {
+                    setEmailOrMobile(e.target.value);
+                    setError("");
+                    // live validate
+                    setFieldErrors((prev) => {
+                      const next = { ...prev };
+                      if (!e.target.value) next.emailOrMobile = "Email or mobile is required";
+                      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)) next.emailOrMobile = "Invalid email address";
+                      else delete next.emailOrMobile;
+                      return next;
+                    });
+                  }}
+                  required
+                />
+                {fieldErrors.emailOrMobile && (
+                  <small className="field-error">{fieldErrors.emailOrMobile}</small>
+                )}
+              </>
             ) : (
               <div className="mobile-input">
                 <span className="mobile-prefix">+91</span>
@@ -125,10 +150,20 @@ const Login = () => {
                   onChange={(e) => {
                     setEmailOrMobile(e.target.value);
                     setError("");
+                    setFieldErrors((prev) => {
+                      const next = { ...prev };
+                      if (!e.target.value) next.emailOrMobile = "Email or mobile is required";
+                      else if (!/^\d{10}$/.test(e.target.value)) next.emailOrMobile = "Mobile must be 10 digits";
+                      else delete next.emailOrMobile;
+                      return next;
+                    });
                   }}
                   maxLength="10"
                   required
                 />
+                {fieldErrors.emailOrMobile && (
+                  <small className="field-error">{fieldErrors.emailOrMobile}</small>
+                )}
               </div>
             )}
           </div>
@@ -144,9 +179,18 @@ const Login = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
                 setError("");
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  if (!e.target.value) next.password = "Password is required";
+                  else delete next.password;
+                  return next;
+                });
               }}
               required
             />
+            {fieldErrors.password && (
+              <small className="field-error">{fieldErrors.password}</small>
+            )}
           </div>
 
           <div className="form-options">
@@ -166,7 +210,7 @@ const Login = () => {
           <button
             type="submit"
             className="btn btn-login"
-            disabled={loading}
+            disabled={loading || Object.keys(fieldErrors).length > 0 || !emailOrMobile || !password}
           >
             {loading ? "Logging in..." : "Login"}
           </button>

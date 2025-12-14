@@ -17,7 +17,7 @@ const RightSection = ({
           </div>
         </div>
         <div className="col-6">
-          <img src={imageURL} />
+          <img className="responsive" src={imageURL} alt={productName} />
         </div>
       </div>
     </div>

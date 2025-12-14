@@ -1,0 +1,18 @@
+/* base.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #387ed1;
+  --text-dark: #333;
+  --muted: #666;
+  --shadow-sm: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: var(--text-dark);
+}

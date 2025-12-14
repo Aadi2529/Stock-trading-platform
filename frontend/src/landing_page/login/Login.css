@@ -237,6 +237,14 @@
   box-shadow: 0 6px 20px rgba(65, 132, 243, 0.4);
 }
 
+/* Field error */
+.field-error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
 .login-divider {
   text-align: center;
   color: #999;

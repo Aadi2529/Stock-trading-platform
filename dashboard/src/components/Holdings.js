@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
+import SocketContext from "../context/SocketContext";
 // import { mockHoldings } from "../data/mockData";
 
 // import { holdings } from "../data/data";
@@ -19,6 +20,34 @@ const Holdings = () => {
         // setAllHoldings(holdings);
       });
   }, []);
+
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleHoldingsUpdated = (holding) => {
+      setAllHoldings((prev) => {
+        const found = prev.find((h) => h.name === holding.name || h._id === holding._id);
+        if (found) {
+          return prev.map((h) => (h.name === holding.name || h._id === holding._id ? holding : h));
+        }
+        return [holding, ...prev];
+      });
+    };
+
+    const handlePriceUpdate = ({ name, price }) => {
+      setAllHoldings((prev) => prev.map((h) => (h.name === name ? { ...h, price } : h)));
+    };
+
+    socket.on("holdingsUpdated", handleHoldingsUpdated);
+    socket.on("priceUpdate", handlePriceUpdate);
+
+    return () => {
+      socket.off("holdingsUpdated", handleHoldingsUpdated);
+      socket.off("priceUpdate", handlePriceUpdate);
+    };
+  }, [socket]);
 
   // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   const labels = allHoldings.map((subArray) => subArray["name"]);
@@ -54,20 +83,22 @@ const Holdings = () => {
     <>
       <h3 className="title">Holdings ({allHoldings.length})</h3>
 
-      <div className="order-table">
+      <div className="order-table table-responsive">
         <table>
-          <tr>
-            <th>Instrument</th>
-            <th>Qty.</th>
-            <th>Avg. cost</th>
-            <th>LTP</th>
-            <th>Cur. val</th>
-            <th>P&L</th>
-            <th>Net chg.</th>
-            <th>Day chg.</th>
-          </tr>
-
-          {allHoldings.map((stock, index) => {
+          <thead>
+            <tr>
+              <th>Instrument</th>
+              <th>Qty.</th>
+              <th>Avg. cost</th>
+              <th>LTP</th>
+              <th>Cur. val</th>
+              <th>P&L</th>
+              <th>Net chg.</th>
+              <th>Day chg.</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allHoldings.map((stock, index) => {
             const curValue = stock.price * stock.qty;
             const isProfit = curValue - stock.avg * stock.qty >= 0.0;
             const profClass = isProfit ? "profit" : "loss";
@@ -88,6 +119,7 @@ const Holdings = () => {
               </tr>
             );
           })}
+          </tbody>
         </table>
       </div>
 

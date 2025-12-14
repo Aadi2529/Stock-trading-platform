@@ -207,6 +207,62 @@
   margin-top: 15px;
 }
 
+/* Field error styles */
+.field-error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Password strength indicator */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.password-strength .bar {
+  width: 80px;
+  height: 8px;
+  border-radius: 6px;
+  background: #eee;
+  position: relative;
+  overflow: hidden;
+}
+.password-strength.weak .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  background: #f66;
+}
+.password-strength.medium .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+  background: #f7b500;
+}
+.password-strength.strong .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: #3cb371;
+}
+.password-strength .strength-text {
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: capitalize;
+}
+
 .link {
   color: #667eea;
   text-decoration: none;
@@ -313,4 +369,13 @@
     padding: 10px 15px;
     font-size: 0.9rem;
   }
+}
+
+/* Ensure signup benefits stack neatly on smaller screens */
+@media (max-width:768px){
+  .signup-benefits{padding:20px}
+  .signup-box{padding:24px}
+}
+@media (max-width:480px){
+  .signup-benefits{display:none}
 }

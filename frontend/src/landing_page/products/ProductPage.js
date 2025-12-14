@@ -1,5 +1,6 @@
 import React from "react";
 import Hero from "./Hero";
+import "./products.css";
 import LeftSection from "./LeftSection";
 import RightSection from "./RightSection";
 import Universe from "./Universe";

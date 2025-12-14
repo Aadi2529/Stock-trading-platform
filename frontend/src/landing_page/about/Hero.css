@@ -1,0 +1,19 @@
+/* About Hero responsive tweaks */
+@media (max-width:992px){
+  .p-5{padding:2rem}
+}
+@media (max-width:768px){
+  .p-5{padding:1rem}
+  .fs-3{font-size:1.2rem}
+  .fs-6{font-size:0.95rem}
+  .row p{font-size:0.98rem}
+}
+@media (max-width:480px){
+  .fs-3{text-align:left}
+  .p-5{padding:0.6rem}
+}
+
+/* Team avatar */
+.team-avatar{border-radius:100%;width:60%;display:block;margin:0 auto}
+@media(max-width:768px){.team-avatar{width:40%}}
+@media(max-width:480px){.team-avatar{width:64%}}

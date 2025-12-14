@@ -1,12 +1,13 @@
 import React from "react";
+import "./Footer.css";
 
 const Footer = () => {
   return (
     <div className="border-top" style={{ backgroundColor: "rgb(250,250,250)" }}>
       <div className="container  mt-5">
-        <div className="row mt-5">
+        <div className="row mt-5 footer-columns">
           <div className="col">
-            <img src="media/images/logo.svg" style={{ width: "50%" }} />
+            <img className="footer-logo" src="media/images/logo.svg" alt="logo" />
             <p className="text-muted">&copy; 2010 - 2025, Zerodha Broking Ltd. All rights reserved.</p>
             <div className="text-muted ">
               <i className="fa-brands fa-facebook-f"></i>
@@ -338,7 +339,7 @@ const Footer = () => {
           </div>
         </div>
         <div
-          className="mt-5 text-small text-muted"
+          className="mt-5 text-small text-muted footer-compact"
           style={{ fontSize: "12px" }}
         >
           <p>

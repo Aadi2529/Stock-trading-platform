@@ -1,5 +1,6 @@
 import React from 'react'
 import Hero from './Hero'
+import './pricing.css'
 import Brokerage from './Brokerage'
 import PricingTabs from './PricingTabs'
 

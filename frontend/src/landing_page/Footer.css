@@ -1,0 +1,25 @@
+/* Footer responsive tweaks */
+.footer-logo{width:160px}
+
+.footer-columns{display:flex;gap:24px;align-items:flex-start}
+.footer-columns .col{flex:1}
+
+.footer-compact{font-size:0.95rem}
+
+@media (max-width:992px){
+  .footer-columns{flex-direction:row;flex-wrap:wrap;gap:16px}
+  .footer-logo{width:140px}
+}
+
+@media (max-width:768px){
+  .footer-columns{flex-direction:column}
+  .footer-compact{font-size:0.9rem}
+  .container{padding-left:12px;padding-right:12px}
+  .footer-logo{width:120px}
+}
+
+@media (max-width:480px){
+  .footer-logo{width:100px}
+  .mt-5{margin-top:16px}
+  .text-small{font-size:0.85rem}
+}

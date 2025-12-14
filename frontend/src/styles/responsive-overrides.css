@@ -1,0 +1,35 @@
+/* Additional responsive overrides for small and medium screens */
+
+/* Ensure tables have touch-friendly spacing on small screens */
+.table-responsive table th,
+.table-responsive table td {
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+@media (max-width: 992px) {
+  .table-responsive table th,
+  .table-responsive table td { padding: 10px; font-size: 0.95rem }
+}
+
+@media (max-width: 480px) {
+  .table-responsive table th,
+  .table-responsive table td { padding: 8px; font-size: 0.85rem }
+  /* Make important CTAs and form buttons full width for touch devices */
+  .hero-cta, .btn-login, .btn-signup, .btn-signup-link { width: 100% !important; display:block; }
+  /* Reduce large paddings */
+  .container.p-5, .p-5 { padding: 12px !important }
+  .mt-5 { margin-top: 16px !important }
+  /* Navbar logo and spacing */
+  .logo{width:110px}
+  /* Compact footer */
+  .footer-compact { font-size: 0.85rem }
+}
+
+/* Small UI polish for inputs on mobile */
+@media (max-width: 480px) {
+  input.form-control, textarea.form-control { padding: 10px 12px }
+}
+
+/* Utilities */
+.btn-full-mobile { width: 100% }

@@ -1,0 +1,12 @@
+/* utilities.css */
+.text-muted {
+  color: var(--muted);
+}
+
+.mt-80 {
+  margin-top: 80px;
+}
+
+.section-padding {
+  padding: 80px 0;
+}

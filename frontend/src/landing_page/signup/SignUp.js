@@ -18,6 +18,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -28,42 +29,90 @@ const SignUp = () => {
       [name]: value,
     }));
     setError("");
+    // Live validate the changed field
+    validateField(name, value);
+  };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validateMobile = (mobile) => {
+    return /^\d{10}$/.test(mobile);
+  };
+
+  const passwordStrength = (pw) => {
+    if (!pw) return "";
+    let score = 0;
+    if (pw.length >= 6) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (score <= 1) return "weak";
+    if (score === 2) return "medium";
+    return "strong";
+  };
+
+  const validateField = (name, value) => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      switch (name) {
+        case "firstName":
+          if (!value || value.trim().length === 0) next.firstName = "First name is required";
+          else delete next.firstName;
+          break;
+        case "email":
+          if (!value) next.email = "Email is required";
+          else if (!validateEmail(value)) next.email = "Invalid email address";
+          else delete next.email;
+          break;
+        case "mobile":
+          if (!value) next.mobile = "Mobile number is required";
+          else if (!validateMobile(value)) next.mobile = "Mobile must be 10 digits";
+          else delete next.mobile;
+          break;
+        case "password":
+          if (!value) next.password = "Password is required";
+          else if (value.length < 6) next.password = "Password must be at least 6 characters";
+          else delete next.password;
+          // Also keep confirmPassword in sync
+          if (formData.confirmPassword && value !== formData.confirmPassword) next.confirmPassword = "Passwords do not match";
+          else if (formData.confirmPassword) delete next.confirmPassword;
+          break;
+        case "confirmPassword":
+          if (!value) next.confirmPassword = "Please confirm your password";
+          else if (value !== formData.password) next.confirmPassword = "Passwords do not match";
+          else delete next.confirmPassword;
+          break;
+        default:
+          break;
+      }
+      return next;
+    });
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+    // Re-validate fields synchronously
+    const errors = {};
+    if (!formData.firstName || formData.firstName.trim().length === 0) errors.firstName = "First name is required";
+    if (!formData.email) errors.email = "Email is required";
+    else if (!validateEmail(formData.email)) errors.email = "Invalid email address";
+    if (!formData.mobile) errors.mobile = "Mobile is required";
+    else if (!validateMobile(formData.mobile)) errors.mobile = "Mobile must be 10 digits";
+    if (!formData.password) errors.password = "Password is required";
+    else if (formData.password.length < 6) errors.password = "Password must be at least 6 characters";
+    if (!formData.confirmPassword) errors.confirmPassword = "Please confirm your password";
+    else if (formData.password !== formData.confirmPassword) errors.confirmPassword = "Passwords do not match";
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError("Please fix the highlighted errors before proceeding");
+      return;
+    }
+
     setLoading(true);
-
-    // Validate inputs
-    if (
-      !formData.firstName ||
-      !formData.email ||
-      !formData.mobile ||
-      !formData.password
-    ) {
-      setError("All fields are required");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      setLoading(false);
-      return;
-    }
-
-    if (!/^\d{10}$/.test(formData.mobile)) {
-      setError("Mobile number must be 10 digits");
-      setLoading(false);
-      return;
-    }
 
     try {
       // Send OTP first
@@ -165,6 +214,9 @@ const SignUp = () => {
                 onChange={handleInputChange}
                 required
               />
+              {fieldErrors.firstName && (
+                <small className="field-error">{fieldErrors.firstName}</small>
+              )}
             </div>
 
             <div className="form-group">
@@ -192,6 +244,9 @@ const SignUp = () => {
                 onChange={handleInputChange}
                 required
               />
+              {fieldErrors.email && (
+                <small className="field-error">{fieldErrors.email}</small>
+              )}
             </div>
 
             <div className="form-group">
@@ -210,6 +265,9 @@ const SignUp = () => {
                   required
                 />
               </div>
+              {fieldErrors.mobile && (
+                <small className="field-error">{fieldErrors.mobile}</small>
+              )}
             </div>
 
             <div className="form-group">
@@ -224,6 +282,16 @@ const SignUp = () => {
                 onChange={handleInputChange}
                 required
               />
+              {fieldErrors.password && (
+                <small className="field-error">{fieldErrors.password}</small>
+              )}
+              {/* Password strength */}
+              {formData.password && (
+                <div className={`password-strength ${passwordStrength(formData.password)}`}>
+                  <div className="bar" />
+                  <small className="strength-text">{passwordStrength(formData.password)}</small>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -238,12 +306,23 @@ const SignUp = () => {
                 onChange={handleInputChange}
                 required
               />
+              {fieldErrors.confirmPassword && (
+                <small className="field-error">{fieldErrors.confirmPassword}</small>
+              )}
             </div>
 
             <button
               type="submit"
               className="btn btn-signup"
-              disabled={loading}
+              disabled={
+                loading ||
+                Object.keys(fieldErrors).length > 0 ||
+                !formData.firstName ||
+                !formData.email ||
+                !formData.mobile ||
+                !formData.password ||
+                !formData.confirmPassword
+              }
             >
               {loading ? "Sending OTP..." : "Send OTP"}
             </button>

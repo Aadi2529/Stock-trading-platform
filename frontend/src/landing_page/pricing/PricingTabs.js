@@ -116,10 +116,10 @@ const ZerodhaTable = ({ variant }) => {
           <thead className="table-light">
             <tr>
               <th className="text-muted fw-medium" style={{ fontSize: "0.85rem" }}></th>
-              <th className="text-muted fw-medium" style={{ fontSize: "0.85rem" }}>Equity delivery</th>
-              <th className="text-muted fw-medium" style={{ fontSize: "0.85rem" }}>Equity intraday</th>
-              <th className="text-muted fw-medium" style={{ fontSize: "0.85rem" }}>F&O - Futures</th>
-              <th className="text-muted fw-medium" style={{ fontSize: "0.85rem" }}>F&O - Options</th>
+              <th className="text-muted fw-medium th-small">Equity delivery</th>
+              <th className="text-muted fw-medium th-small">Equity intraday</th>
+              <th className="text-muted fw-medium th-small">F&O - Futures</th>
+              <th className="text-muted fw-medium th-small">F&O - Options</th>
             </tr>
           </thead>
           <tbody>

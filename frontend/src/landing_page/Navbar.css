@@ -1,0 +1,103 @@
+/* ================= BASE ================= */
+.custom-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.navbar-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-logo {
+  width: 180px;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav {
+  gap: 8px;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #333;
+  position: relative;
+  padding: 8px 12px;
+  transition: color 0.3s ease;
+}
+
+/* Hover underline animation */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #387ed1;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Active link */
+.active-link {
+  color: #387ed1 !important;
+}
+
+.active-link::after {
+  width: 100%;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 576px) {
+  .navbar-logo {
+    width: 120px;
+  }
+
+  .navbar-collapse {
+    background: #fff;
+    margin-top: 10px;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .nav-link {
+    padding: 12px 0;
+  }
+
+  .nav-link::after {
+    display: none;
+  }
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 991px) {
+  .navbar-logo {
+    width: 150px;
+  }
+}
+
+/* ================= LAPTOP ================= */
+@media (min-width: 992px) {
+  .navbar-logo {
+    width: 180px;
+  }
+}
+
+/* ================= LARGE SCREENS ================= */
+@media (min-width: 1200px) {
+  .navbar-logo {
+    width: 200px;
+  }
+}

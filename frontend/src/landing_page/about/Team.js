@@ -15,8 +15,9 @@ const Team = () => {
         >
           <div className="col-md-6 p-5 text-center">
             <img
+              className="team-avatar responsive"
               src="media/images/nithinKamath.jpg"
-              style={{ borderRadius: "100%", width: "60%" }}
+              alt="Nithin Kamath"
             />
             <h4 className="mt-4">Nithin Kamath</h4>
             <h6>Co-founder & CEO</h6>

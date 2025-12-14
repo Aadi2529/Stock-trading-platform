@@ -13,12 +13,24 @@ const BuyActionWindow = ({ uid }) => {
 
   const handleBuyClick = async () => {
     try {
-      await axios.post("http://localhost:3002/newOrder", {
-        name: uid,
-        qty: Number(stockQuantity),
-        price: Number(stockPrice),
-        mode: "BUY",
-      });
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        "http://localhost:3002/newOrder",
+        {
+          name: uid,
+          qty: Number(stockQuantity),
+          price: Number(stockPrice),
+          mode: "BUY",
+        },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+      
+
+      // Dispatch a local event immediately so UI updates without waiting
+      if (res && res.data && res.data.order) {
+        const order = res.data.order;
+        window.dispatchEvent(new CustomEvent("localOrderCreated", { detail: order }));
+      }
 
       // close the buy window via context
       generalContext.closeBuyWindow();
@@ -34,7 +46,7 @@ const BuyActionWindow = ({ uid }) => {
   };
 
   return (
-    <div className="container" id="buy-window" draggable="true">
+    <div className="container modal-full-mobile" id="buy-window" draggable="true">
       <div className="regular-order">
         <div className="inputs">
           <fieldset>
@@ -62,13 +74,13 @@ const BuyActionWindow = ({ uid }) => {
         </div>
       </div>
 
-      <div className="buttons">
+      <div className="buttons small-gap">
         <span>Margin required ₹140.65</span>
         <div>
-          <button type="button" className="btn btn-blue" onClick={handleBuyClick}>
+          <button type="button" className="btn btn-blue btn-compact" onClick={handleBuyClick}>
             Buy
           </button>
-          <button type="button" className="btn btn-grey" onClick={handleCancelClick}>
+          <button type="button" className="btn btn-grey btn-compact" onClick={handleCancelClick}>
             Cancel
           </button>
         </div>

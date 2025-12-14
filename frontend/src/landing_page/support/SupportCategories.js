@@ -158,8 +158,8 @@ export default function SupportCategories() {
 
         {/* RIGHT: sidebar */}
         <div className="col-lg-4">
-          <div className="mb-4" style={{ borderLeft: "6px solid #ff9a2a", background: "#fff3ea", padding: "16px" }}>
-            <ul className="mb-0" style={{ paddingLeft: "18px" }}>
+          <div className="mb-4 support-highlight">
+            <ul className="mb-0 support-list">
               <li className="mb-2">
                 <Link to="/support" className="text-decoration-underline text-primary">Offer for sale (OFS) – December 2025</Link>
               </li>

@@ -1,0 +1,17 @@
+/* layout.css */
+.app-navbar {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1000;
+  transition: 0.3s;
+}
+
+.nav-logo {
+  width: 180px;
+}
+
+.app-footer {
+  background: #fafafa;
+  padding: 40px 0;
+}

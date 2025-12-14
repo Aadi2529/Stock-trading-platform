@@ -1,7 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './styles/responsive.css';
+import './styles/responsive-overrides.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import "./styles/base.css";
+import "./styles/layout.css";
+import "./styles/components.css";
+import "./styles/utilities.css";
+import "./styles/responsive.css";
+
 
 import HomePage from './landing_page/home/HomePage';
 import SignUp from './landing_page/signup/SignUp';
@@ -16,6 +24,7 @@ import Footer from './landing_page/Footer';
 import NotFound from './landing_page/NotFound';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 // Dashboard component (to be used with PrivateRoute)
 // const DashboardPlaceholder = () => (
@@ -30,6 +39,7 @@ root.render(
   <AuthProvider>
     <BrowserRouter>
       <Navbar />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignUp />} />
