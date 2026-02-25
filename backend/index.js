@@ -20,7 +20,11 @@ mongoose
 // register middleware before routes
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174",
+      "https://stock-trading-platform-frontend.vercel.app",
+      "https://stock-trading-platform-dashboard.vercel.app",
+      ""
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
