@@ -1,0 +1,64 @@
+/* SupportCategories styles and simple animations */
+.support-link {
+  text-decoration: none;
+  color: #0b63c6; /* primary blue by default */
+}
+
+.support-link:hover {
+  text-decoration: underline;
+  color: #084ea8;
+}
+
+.card.mb-3 {
+  overflow: visible;
+}
+
+.card .collapse {
+  animation: fadeSlideDown 240ms ease-in-out;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-link {
+  color: #111827;
+}
+
+.btn-link:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* chevron rotation */
+.chev {
+  transition: transform 180ms ease-in-out;
+}
+.chev.open {
+  transform: rotate(180deg);
+}
+
+/* card hover */
+.card:hover {
+  transform: translateY(-2px);
+  transition: transform 180ms ease-in-out;
+}
+
+.support-link {
+  transition: color 120ms ease-in-out;
+}
+
+.support-highlight{border-left:6px solid #ff9a2a;background:#fff3ea;padding:16px}
+.support-list{padding-left:18px}
+
+@media(max-width:768px){
+  .support-highlight{padding:12px;margin-bottom:12px}
+  .support-list{padding-left:8px}
+}
+
+@media (max-width:768px){
+  .card .btn { width:100%; text-align:left }
+  .card .d-flex { flex-direction:row }
+  .card-body ul { padding-left: 8px }
+}

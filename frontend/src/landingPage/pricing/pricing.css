@@ -1,0 +1,17 @@
+/* Pricing page responsive table tweaks */
+.table-responsive { overflow-x:auto; -webkit-overflow-scrolling: touch }
+.table-responsive table{min-width:720px}
+
+@media (max-width:768px){
+  .table-responsive table{min-width:640px}
+}
+
+@media (max-width:480px){
+  /* Allow comfortable reading on tiny screens */
+  .table-responsive table{min-width:520px}
+  .fs-5{font-size:0.95rem}
+  .fs-3{font-size:1.1rem}
+}
+
+.th-small{font-size:0.85rem}
+@media(max-width:480px){.th-small{font-size:0.8rem}}
