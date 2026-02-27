@@ -40,7 +40,7 @@ module.exports.Signup = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,      // ✅ secure
       secure: false,      // change to true in production
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     return res.status(201).json({

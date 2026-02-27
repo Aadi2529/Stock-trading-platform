@@ -5,6 +5,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 const Login = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL;
+
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -17,19 +20,26 @@ const Login = () => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setInputValue({
-      ...inputValue,
+    setInputValue((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!BACKEND_URL) {
+      toast.error("Backend URL not configured");
+      console.error("VITE_BACKEND_URL is missing");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/login",
+        `${BACKEND_URL}/login`,
         inputValue,
         { withCredentials: true }
       );
@@ -37,26 +47,34 @@ const Login = () => {
       const { success, message, token, user } = response.data;
 
       if (!success) {
-        toast.error(message);
+        toast.error(message || "Login failed");
         setLoading(false);
         return;
       }
 
-      toast.success(message);
+      toast.success(message || "Login successful");
 
-      // Get dashboard URL from Vite env
-      const dashboardUrl =
-        import.meta.env.DASHBOARD_URL || "http://localhost:5174";
+      // Store basic data locally (optional but useful)
+      if (user) {
+        localStorage.setItem("userId", user.id);
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("email", user.email);
+      }
 
-      // Redirect with token and user data
-      const userParam = user ? `&username=${encodeURIComponent(user.username)}&email=${encodeURIComponent(user.email)}&userId=${user.id}` : "";
+      const redirectUrl =
+        DASHBOARD_URL || "http://localhost:5174";
+
+      const queryParams = `?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
       setTimeout(() => {
-        window.location.href = `${dashboardUrl}?token=${token}${userParam}`;
+        window.location.href = `${redirectUrl}${queryParams}`;
       }, 1000);
 
     } catch (error) {
-      toast.error("Login failed");
-      console.log(error);
+      console.error("Login error:", error);
+      toast.error(
+        error?.response?.data?.message || "Login failed"
+      );
     }
 
     setLoading(false);
