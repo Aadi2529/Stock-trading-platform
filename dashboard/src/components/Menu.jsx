@@ -6,6 +6,8 @@ const Menu = () => {
   const [userName, setUserName] = useState("");
   const [userDisplay, setUserDisplay] = useState("U");
 
+  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     let userObj = null;
@@ -18,7 +20,7 @@ const Menu = () => {
       }
     }
 
-    // Fallback: check for individual fields if user object not found
+    // Fallback
     if (!userObj) {
       const username = localStorage.getItem("username");
       const email = localStorage.getItem("email");
@@ -37,7 +39,15 @@ const Menu = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "http://localhost:5173";
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+
+    if (FRONTEND_URL) {
+      window.location.href = `${FRONTEND_URL}/login`;
+    } else {
+      window.location.href = "/";
+    }
   };
 
   const menuItems = [
@@ -45,8 +55,6 @@ const Menu = () => {
     { name: "Orders", path: "/orders" },
     { name: "Holdings", path: "/holdings" },
     { name: "Positions", path: "/positions" },
-    { name: "Funds", path: "/funds" },
-    { name: "Apps", path: "/apps" },
   ];
 
   return (
@@ -76,7 +84,6 @@ const Menu = () => {
           </NavLink>
         ))}
 
-        {/* Divider */}
         <div className="h-6 w-px bg-gray-700"></div>
 
         {/* Profile */}

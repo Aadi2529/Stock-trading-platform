@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Summary from "./Summary";
 import Orders from "./Orders";
 import Watchlist from "./Watchlist";
-// import Holding from "../../../backend/Models/Holding";
 import Holdings from "./Holdings";
 import Positions from "./Positions";
 import PortfolioSummary from "./PortfolioSummary";
@@ -12,6 +11,8 @@ import { useTradeRefresh } from "../hooks/useTradeRefresh";
 
 const Dashboard = () => {
   const { refreshTrigger, triggerRefresh } = useTradeRefresh();
+
+  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -21,66 +22,79 @@ const Dashboard = () => {
     const usernameFromUrl = params.get("username");
     const emailFromUrl = params.get("email");
 
+    // ✅ Store token
     if (tokenFromUrl) {
       localStorage.setItem("token", tokenFromUrl);
     }
 
+    // ✅ Store user data
     if (userIdFromUrl || usernameFromUrl || emailFromUrl) {
       const userData = {
         id: userIdFromUrl,
         username: usernameFromUrl,
         email: emailFromUrl,
       };
+
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("userId", userIdFromUrl);
       localStorage.setItem("username", usernameFromUrl);
     }
 
-    // Remove sensitive data from URL
-    window.history.replaceState({}, document.title, "/");
+    // ✅ Clean URL (remove token from query)
+    if (window.location.search) {
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+    }
 
     const token = localStorage.getItem("token");
 
+    // ❌ If no token → redirect to frontend login
     if (!token) {
-      window.location.href = "http://localhost:5173/login";
+      window.location.href = `${FRONTEND_URL}/login`;
     }
+  }, [FRONTEND_URL]);
 
-  }, []);
+  return (
+    <div className="w-full h-screen bg-[#0f172a] text-white flex">
+      
+      {/* LEFT SIDE - WATCHLIST */}
+      <div className="w-[320px] border-r border-gray-800 bg-[#111827]">
+        <Watchlist onTradeComplete={triggerRefresh} />
+      </div>
 
-return (
-  <div className="w-full h-screen bg-[#0f172a] text-white flex">
+      {/* RIGHT SIDE - MAIN AREA */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        {/* TOP SUMMARY */}
+        <PortfolioSummary refreshTrigger={refreshTrigger} />
 
-    {/* LEFT SIDE - WATCHLIST */}
-    <div className="w-[320px] border-r border-gray-800 bg-[#111827]">
-      <Watchlist onTradeComplete={triggerRefresh} />
+        {/* ROUTED CONTENT */}
+        <Routes>
+          <Route path="/" element={<Summary />} />
+          <Route
+            path="orders"
+            element={<Orders refreshTrigger={refreshTrigger} />}
+          />
+          <Route
+            path="holdings"
+            element={<Holdings refreshTrigger={refreshTrigger} />}
+          />
+          <Route path="positions" element={<Positions />} />
+          <Route
+            path="*"
+            element={
+              <div className="text-center mt-20 text-gray-400">
+                Page not found
+              </div>
+            }
+          />
+        </Routes>
+      </div>
     </div>
-
-    {/* RIGHT SIDE - MAIN AREA */}
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
-      {/* TOP SUMMARY ALWAYS VISIBLE */}
-      <PortfolioSummary refreshTrigger={refreshTrigger} />
-
-      {/* ROUTED CONTENT */}
-      <Routes>
-        <Route path="/" element={<Summary />} />
-        <Route path="orders" element={<Orders refreshTrigger={refreshTrigger} />} />
-        <Route path="holdings" element={<Holdings refreshTrigger={refreshTrigger} />} />
-        <Route path="positions" element={<Positions />} />
-        <Route
-          path="*"
-          element={
-            <div className="text-center mt-20 text-gray-400">
-              Page not found
-            </div>
-          }
-        />
-      </Routes>
-
-    </div>
-
-  </div>
-);
+  );
 };
 
 export default Dashboard;

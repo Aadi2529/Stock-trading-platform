@@ -3,24 +3,35 @@ import axios from "axios";
 
 const Orders = ({ refreshTrigger }) => {
   const [orders, setOrders] = useState([]);
+
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !BACKEND_URL) return;
 
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:4000/trade/orders/${userId}`
+          `${BACKEND_URL}/trade/orders/${userId}`,
+          {
+            headers: token
+              ? { Authorization: `Bearer ${token}` }
+              : {},
+            withCredentials: true,
+          }
         );
-        setOrders(res.data);
+
+        setOrders(res.data || []);
       } catch (err) {
-        console.error("Failed to fetch orders:", err.message);
+        console.error("Failed to fetch orders:", err);
       }
     };
 
     fetchOrders();
-  }, [userId, refreshTrigger]);
+  }, [userId, refreshTrigger, BACKEND_URL, token]);
 
   if (orders.length === 0) {
     return (
@@ -82,7 +93,7 @@ const Orders = ({ refreshTrigger }) => {
 
                 <td
                   className={`p-4 font-semibold ${
-                    order.realizedProfit >= 0
+                    (order.realizedProfit || 0) >= 0
                       ? "text-green-400"
                       : "text-red-400"
                   }`}
@@ -91,7 +102,9 @@ const Orders = ({ refreshTrigger }) => {
                 </td>
 
                 <td className="p-4 text-gray-400 text-xs">
-                  {new Date(order.createdAt).toLocaleString()}
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleString()
+                    : "-"}
                 </td>
               </tr>
             ))}

@@ -4,29 +4,42 @@ import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = ({ refreshTrigger }) => {
   const [holdings, setHoldings] = useState([]);
-  const [market, setMarket] = useState({});
+  const [market, setMarket] = useState([]);
+
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!BACKEND_URL || !userId) return;
+
       try {
-        const h = await axios.get(
-          `http://localhost:4000/trade/holdings/${userId}`
-        );
+        const [h, m] = await Promise.all([
+          axios.get(`${BACKEND_URL}/trade/holdings/${userId}`, {
+            headers: token
+              ? { Authorization: `Bearer ${token}` }
+              : {},
+            withCredentials: true,
+          }),
+          axios.get(`${BACKEND_URL}/trade/market`, {
+            headers: token
+              ? { Authorization: `Bearer ${token}` }
+              : {},
+            withCredentials: true,
+          }),
+        ]);
 
-        const m = await axios.get(
-          `http://localhost:4000/trade/market`
-        );
-
-        setHoldings(h.data);
-        setMarket(m.data);
+        setHoldings(h.data || []);
+        setMarket(m.data || {});
       } catch (err) {
-        console.error("Failed to fetch holdings:", err.message);
+        console.error("Failed to fetch holdings:", err);
       }
     };
 
     fetchData();
-  }, [userId, refreshTrigger]);
+  }, [userId, refreshTrigger, BACKEND_URL, token]);
 
   /* ================= CHART DATA ================= */
 
@@ -47,10 +60,8 @@ const Holdings = ({ refreshTrigger }) => {
 
   return (
     <div className="space-y-6">
-
       <h2 className="text-2xl font-semibold mb-4">Holdings</h2>
 
-      {/* Holdings List */}
       {holdings.length === 0 && (
         <div className="text-gray-400">
           No holdings available.
@@ -90,13 +101,11 @@ const Holdings = ({ refreshTrigger }) => {
         );
       })}
 
-      {/* Portfolio Graph */}
       {holdings.length > 0 && (
         <div className="mt-10 bg-[#1e293b] p-6 rounded-xl border border-gray-700">
           <VerticalGraph data={chartData} />
         </div>
       )}
-
     </div>
   );
 };

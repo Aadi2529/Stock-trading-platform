@@ -1,5 +1,5 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -10,32 +10,78 @@ import {
 } from "recharts";
 
 const Summary = () => {
-  const account = {
-    totalValue: 84500,
-    dayPnl: 1250,
-    dayPnlPercent: 1.5,
-    totalInvestment: 76000,
-    totalPnl: 8500,
-  };
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Trader";
+  const token = localStorage.getItem("token");
 
-  const isDayProfit = account.dayPnl >= 0;
-  const isTotalProfit = account.totalPnl >= 0;
+  const [holdings, setHoldings] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [wallet, setWallet] = useState(null);
+  const [market, setMarket] = useState({});
 
-  const chartData = [
-    { time: "9AM", value: 80000 },
-    { time: "10AM", value: 81000 },
-    { time: "11AM", value: 80500 },
-    { time: "12PM", value: 82000 },
-    { time: "1PM", value: 83500 },
-    { time: "2PM", value: 84500 },
-  ];
+  useEffect(() => {
+    if (!userId || !BACKEND_URL) return;
 
-  const transactions = [
-    { stock: "TCS", type: "BUY", qty: 5, price: 3500 },
-    { stock: "INFY", type: "SELL", qty: 3, price: 1500 },
-    { stock: "RELIANCE", type: "BUY", qty: 2, price: 2600 },
-  ];
+    const fetchData = async () => {
+      try {
+        const [h, o, w, m] = await Promise.all([
+          axios.get(`${BACKEND_URL}/trade/holdings/${userId}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }),
+          axios.get(`${BACKEND_URL}/trade/orders/${userId}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }),
+          axios.get(`${BACKEND_URL}/trade/wallet/${userId}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }),
+          axios.get(`${BACKEND_URL}/trade/market`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }),
+        ]);
+
+        setHoldings(h.data || []);
+        setOrders(o.data || []);
+        setWallet(w.data || null);
+        setMarket(m.data || {});
+      } catch (err) {
+        console.error("Failed to fetch summary data:", err);
+      }
+    };
+
+    fetchData();
+  }, [userId, BACKEND_URL, token]);
+
+  /* ================= CALCULATIONS ================= */
+
+  const invested = holdings.reduce(
+    (acc, h) => acc + h.avgPrice * h.quantity,
+    0
+  );
+
+  const currentValue = holdings.reduce((acc, h) => {
+    const live = market[h.symbol] || 0;
+    return acc + live * h.quantity;
+  }, 0);
+
+  const totalPnl = currentValue - invested;
+
+  const totalAccountValue =
+    (wallet?.balance || 0) + currentValue;
+
+  const isProfit = totalPnl >= 0;
+
+  /* ================= CHART DATA ================= */
+
+  const chartData = holdings.map((h) => ({
+    name: h.symbol,
+    value: (market[h.symbol] || 0) * h.quantity,
+  }));
+
+  /* ================= RECENT TRANSACTIONS ================= */
+
+  const recentTransactions = orders.slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -48,64 +94,52 @@ const Summary = () => {
         <div className="h-px bg-gray-800 mt-3"></div>
       </div>
 
-      {/* Account Overview Cards */}
+      {/* Account Cards */}
       <div className="grid grid-cols-4 gap-6">
 
-        {/* Total Account Value */}
         <div className="bg-[#111827] p-5 rounded-xl border border-gray-800">
           <p className="text-gray-400 text-sm">Total Account Value</p>
           <h3 className="text-2xl font-bold text-blue-400 mt-2">
-            ₹{account.totalValue.toLocaleString()}
+            ₹{totalAccountValue.toFixed(2)}
           </h3>
         </div>
 
-        {/* Day P&L */}
         <div className="bg-[#111827] p-5 rounded-xl border border-gray-800">
-          <p className="text-gray-400 text-sm">Day P&L</p>
-          <h3
-            className={`text-2xl font-bold mt-2 ${
-              isDayProfit ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            ₹{account.dayPnl.toLocaleString()}
-            <span className="text-sm ml-2">
-              ({isDayProfit ? "+" : ""}
-              {account.dayPnlPercent}%)
-            </span>
-          </h3>
-        </div>
-
-        {/* Total Investment */}
-        <div className="bg-[#111827] p-5 rounded-xl border border-gray-800">
-          <p className="text-gray-400 text-sm">Total Investment</p>
+          <p className="text-gray-400 text-sm">Invested</p>
           <h3 className="text-2xl font-bold text-gray-200 mt-2">
-            ₹{account.totalInvestment.toLocaleString()}
+            ₹{invested.toFixed(2)}
           </h3>
         </div>
 
-        {/* Total P&L */}
+        <div className="bg-[#111827] p-5 rounded-xl border border-gray-800">
+          <p className="text-gray-400 text-sm">Current Value</p>
+          <h3 className="text-2xl font-bold text-gray-200 mt-2">
+            ₹{currentValue.toFixed(2)}
+          </h3>
+        </div>
+
         <div className="bg-[#111827] p-5 rounded-xl border border-gray-800">
           <p className="text-gray-400 text-sm">Total P&L</p>
           <h3
             className={`text-2xl font-bold mt-2 ${
-              isTotalProfit ? "text-green-400" : "text-red-400"
+              isProfit ? "text-green-400" : "text-red-400"
             }`}
           >
-            ₹{account.totalPnl.toLocaleString()}
+            ₹{totalPnl.toFixed(2)}
           </h3>
         </div>
 
       </div>
 
-      {/* Portfolio Performance Chart */}
+      {/* Chart */}
       <div className="bg-[#111827] p-6 rounded-xl border border-gray-800">
         <h3 className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
-          Portfolio Performance (Today)
+          Portfolio Allocation
         </h3>
 
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
-            <XAxis dataKey="time" stroke="#6b7280" />
+            <XAxis dataKey="name" stroke="#6b7280" />
             <YAxis stroke="#6b7280" />
             <Tooltip />
             <Line
@@ -125,39 +159,45 @@ const Summary = () => {
           Recent Transactions
         </h3>
 
-        <table className="w-full text-sm text-left">
-          <thead className="text-gray-400 border-b border-gray-700">
-            <tr>
-              <th className="pb-3">Stock</th>
-              <th className="pb-3">Type</th>
-              <th className="pb-3">Quantity</th>
-              <th className="pb-3">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx, index) => (
-              <tr
-                key={index}
-                className="border-b border-gray-800 hover:bg-gray-800/50"
-              >
-                <td className="py-3 text-gray-200">{tx.stock}</td>
-                <td
-                  className={`py-3 font-medium ${
-                    tx.type === "BUY"
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {tx.type}
-                </td>
-                <td className="py-3 text-gray-300">{tx.qty}</td>
-                <td className="py-3 text-gray-300">
-                  ₹{tx.price.toLocaleString()}
-                </td>
+        {recentTransactions.length === 0 ? (
+          <p className="text-gray-400">No transactions yet.</p>
+        ) : (
+          <table className="w-full text-sm text-left">
+            <thead className="text-gray-400 border-b border-gray-700">
+              <tr>
+                <th className="pb-3">Stock</th>
+                <th className="pb-3">Type</th>
+                <th className="pb-3">Quantity</th>
+                <th className="pb-3">Price</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recentTransactions.map((tx) => (
+                <tr
+                  key={tx._id}
+                  className="border-b border-gray-800 hover:bg-gray-800/50"
+                >
+                  <td className="py-3 text-gray-200">{tx.symbol}</td>
+                  <td
+                    className={`py-3 font-medium ${
+                      tx.type === "BUY"
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {tx.type}
+                  </td>
+                  <td className="py-3 text-gray-300">
+                    {tx.quantity}
+                  </td>
+                  <td className="py-3 text-gray-300">
+                    ₹{Number(tx.price).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
     </div>

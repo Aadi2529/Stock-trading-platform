@@ -4,7 +4,11 @@ import toast from "react-hot-toast";
 
 const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
   const [quantity, setQuantity] = useState(1);
+
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   const handleBuy = async () => {
     if (quantity <= 0) {
@@ -12,23 +16,38 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
       return;
     }
 
+    if (!BACKEND_URL) {
+      toast.error("Backend not configured");
+      console.error("VITE_BACKEND_URL missing");
+      return;
+    }
+
     try {
-      const res = await axios.post("http://localhost:4000/trade/order", {
-        userId,
-        symbol,
-        type: "BUY",
-        quantity,
-      });
+      const res = await axios.post(
+        `${BACKEND_URL}/trade/order`,
+        {
+          userId,
+          symbol,
+          type: "BUY",
+          quantity,
+        },
+        {
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : {},
+          withCredentials: true,
+        }
+      );
 
       toast.success(`Bought ${quantity} ${symbol} at ₹${res.data.price}`);
-      
-      // Call onSuccess callback if provided
+
       if (onSuccess) {
         onSuccess();
       }
-      
+
       onClose();
     } catch (err) {
+      console.error("Buy error:", err);
       toast.error(err.response?.data?.message || "Order failed");
     }
   };
