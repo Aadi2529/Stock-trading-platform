@@ -1,57 +1,74 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const app = express();
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
+
 const authRoute = require("./Routes/AuthRoute");
 const tradeRoute = require("./Routes/TradeRoute");
+
+const app = express();
 const { MONGO_URL, PORT } = process.env;
 
+/* =======================
+   DATABASE CONNECTION
+======================= */
+
 mongoose
-  .connect(MONGO_URL )
-  .then(() => console.log("MongoDB is  connected successfully"))
-  .catch((err) => console.error(err));
+  .connect(MONGO_URL)
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+/* =======================
+   CORS CONFIGURATION
+======================= */
 
-  app.get("/", (req, res) => {
-    res.send("Welcome to the Stock Trading Platform API");
-  });
-  
-// register middleware before routes
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174",
-      "https://trade-nova-eight.vercel.app/",
-      "https://trade-nova-dashboard.vercel.app/"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true, // dynamically allow origin (best for deployment)
     credentials: true,
   })
 );
-const cookieParser = require("cookie-parser");
+
+/* =======================
+   MIDDLEWARE
+======================= */
+
 app.use(cookieParser());
 app.use(express.json());
-// parse x-www-form-urlencoded (for forms / Postman form-data)
 app.use(express.urlencoded({ extended: true }));
-// parse plain text bodies (some clients send raw text/plain)
-app.use(express.text({ type: 'text/*' }));
 
-// simple request logger to help debug incoming bodies
+/* =======================
+   REQUEST LOGGER (Debug)
+======================= */
+
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path} - content-type: ${req.headers['content-type']}`);
-  // body will be populated by parsers above
-  console.log('body:', req.body);
+  console.log(
+    `${req.method} ${req.path} - content-type: ${req.headers["content-type"]}`
+  );
+  console.log("body:", req.body);
   next();
 });
 
-// register routes
+/* =======================
+   ROUTES
+======================= */
+
+// Root test route
+app.get("/", (req, res) => {
+  res.send("🚀 Stock Trading Platform API Running");
+});
+
+// Auth routes
 app.use("/", authRoute);
-// all trade related routes will be prefixed with /trade
+
+// Trade routes
 app.use("/trade", tradeRoute);
 
+/* =======================
+   START SERVER
+======================= */
 
-
-// start server after middleware and routes
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`🔥 Server running on port ${PORT}`);
 });
