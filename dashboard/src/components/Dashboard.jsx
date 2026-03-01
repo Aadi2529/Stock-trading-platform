@@ -15,7 +15,6 @@ const Dashboard = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
   // 🔐 Auth Handling
   useEffect(() => {
