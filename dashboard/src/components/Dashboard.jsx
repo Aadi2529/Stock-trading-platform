@@ -9,12 +9,12 @@ import Holdings from "./Holdings";
 import Positions from "./Positions";
 import PortfolioSummary from "./PortfolioSummary";
 import { useTradeRefresh } from "../hooks/useTradeRefresh";
-const location = useLocation();
-const isHome = location.pathname === "/";
 
 const Dashboard = () => {
   const { refreshTrigger, triggerRefresh } = useTradeRefresh();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
