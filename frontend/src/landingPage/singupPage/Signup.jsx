@@ -32,7 +32,6 @@ const Signup = () => {
 
     if (!BACKEND_URL) {
       toast.error("Backend URL not configured");
-      console.error("VITE_BACKEND_URL is missing");
       return;
     }
 
@@ -62,13 +61,30 @@ const Signup = () => {
         localStorage.setItem("email", user.email);
       }
 
-      const redirectUrl =
-        DASHBOARD_URL || "http://localhost:5174";
+      /* ============================
+         SAFE PRODUCTION REDIRECT
+      ============================ */
 
-      const queryParams = `?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+      let baseUrl = DASHBOARD_URL;
+
+      // fallback if env missing
+      if (!baseUrl) {
+        baseUrl = "http://localhost:5174";
+      }
+
+      // ensure https prefix
+      if (!baseUrl.startsWith("http")) {
+        baseUrl = `https://${baseUrl}`;
+      }
+
+      const redirectUrl = new URL(baseUrl);
+
+      redirectUrl.searchParams.set("token", token);
+      redirectUrl.searchParams.set("userId", user?.id);
+      redirectUrl.searchParams.set("username", user?.username || "");
 
       setTimeout(() => {
-        window.location.href = `${redirectUrl}${queryParams}`;
+        window.location.href = redirectUrl.toString();
       }, 1000);
 
     } catch (err) {
