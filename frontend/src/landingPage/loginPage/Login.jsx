@@ -38,11 +38,9 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/login`,
-        inputValue,
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${BACKEND_URL}/login`, inputValue, {
+        withCredentials: true,
+      });
 
       const { success, message, token, user } = response.data;
 
@@ -61,20 +59,23 @@ const Login = () => {
         localStorage.setItem("email", user.email);
       }
 
-      const redirectUrl =
-        DASHBOARD_URL || "http://localhost:5174";
+      const redirectUrl = DASHBOARD_URL || "http://localhost:5174";
 
       const queryParams = `?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
 
       setTimeout(() => {
-        window.location.href = `${redirectUrl}${queryParams}`;
-      }, 1000);
+        const dashboardBase = "https://trade-nova-dashboard.vercel.app";
 
+        const finalUrl = `${dashboardBase}?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
+        window.open(finalUrl, "_blank"); // open in new tab
+
+        // optionally stay on home page or redirect to login/home
+        window.location.href = "/";
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      toast.error(
-        error?.response?.data?.message || "Login failed"
-      );
+      toast.error(error?.response?.data?.message || "Login failed");
     }
 
     setLoading(false);
@@ -83,16 +84,12 @@ const Login = () => {
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#f8fafc] pt-24 pb-20">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 p-10">
-
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
-          <p className="text-gray-500 text-sm">
-            Login to your trading account
-          </p>
+          <p className="text-gray-500 text-sm">Login to your trading account</p>
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-
           <div>
             <label className="block text-sm text-gray-600 mb-2">
               Email address
@@ -109,9 +106,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-2">
-              Password
-            </label>
+            <label className="block text-sm text-gray-600 mb-2">Password</label>
 
             <div className="relative">
               <input
@@ -141,7 +136,6 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
         <p className="text-center mt-6 text-sm text-gray-600">
@@ -150,7 +144,6 @@ const Login = () => {
             Create one
           </Link>
         </p>
-
       </div>
     </section>
   );

@@ -38,11 +38,9 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/signup`,
-        inputValue,
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${BACKEND_URL}/signup`, inputValue, {
+        withCredentials: true,
+      });
 
       const { success, message, token, user } = response.data;
 
@@ -84,14 +82,18 @@ const Signup = () => {
       redirectUrl.searchParams.set("username", user?.username || "");
 
       setTimeout(() => {
-        window.location.href = redirectUrl.toString();
-      }, 1000);
+        const dashboardBase = "https://trade-nova-dashboard.vercel.app";
 
+        const finalUrl = `${dashboardBase}?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
+        window.open(finalUrl, "_blank"); // open in new tab
+        
+        // optionally stay on home page or redirect to login/home
+        window.location.href = "/";
+      }, 1000);
     } catch (err) {
       console.error("Signup error:", err);
-      toast.error(
-        err?.response?.data?.message || "Signup failed"
-      );
+      toast.error(err?.response?.data?.message || "Signup failed");
     }
 
     setLoading(false);
@@ -100,13 +102,9 @@ const Signup = () => {
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#f8fafc] pt-24 pb-20">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 p-10">
-
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Create Account
-        </h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Create Account</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
           <input
             name="username"
             type="text"
@@ -154,7 +152,6 @@ const Signup = () => {
           >
             {loading ? "Creating..." : "Create Account"}
           </button>
-
         </form>
 
         <p className="text-center mt-6 text-sm text-gray-600">
@@ -163,7 +160,6 @@ const Signup = () => {
             Login
           </Link>
         </p>
-
       </div>
     </section>
   );
