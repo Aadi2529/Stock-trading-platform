@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 
 import Summary from "./Summary";
 import Orders from "./Orders";
@@ -9,8 +8,6 @@ import Holdings from "./Holdings";
 import Positions from "./Positions";
 import PortfolioSummary from "./PortfolioSummary";
 import { useTradeRefresh } from "../hooks/useTradeRefresh";
-const location = useLocation();
-const isHome = location.pathname === "/";
 
 const Dashboard = () => {
   const { refreshTrigger, triggerRefresh } = useTradeRefresh();
@@ -89,41 +86,34 @@ const Dashboard = () => {
         </div>
 
         {/* Scrollable Content */}
-<div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
-  {/* If Home → Summary at Top */}
-  {isHome && (
-    <PortfolioSummary refreshTrigger={refreshTrigger} />
-  )}
+          {/* Portfolio Summary */}
+          <PortfolioSummary refreshTrigger={refreshTrigger} />
 
-  {/* Routed Content */}
-  <Routes>
-    <Route path="/" element={<Summary />} />
-    <Route
-      path="orders"
-      element={<Orders refreshTrigger={refreshTrigger} />}
-    />
-    <Route
-      path="holdings"
-      element={<Holdings refreshTrigger={refreshTrigger} />}
-    />
-    <Route path="positions" element={<Positions />} />
-    <Route
-      path="*"
-      element={
-        <div className="text-center mt-20 text-gray-400">
-          Page not found
+          {/* Routed Content */}
+          <Routes>
+            <Route path="/" element={<Summary />} />
+            <Route
+              path="orders"
+              element={<Orders refreshTrigger={refreshTrigger} />}
+            />
+            <Route
+              path="holdings"
+              element={<Holdings refreshTrigger={refreshTrigger} />}
+            />
+            <Route path="positions" element={<Positions />} />
+            <Route
+              path="*"
+              element={
+                <div className="text-center mt-20 text-gray-400">
+                  Page not found
+                </div>
+              }
+            />
+          </Routes>
+
         </div>
-      }
-    />
-  </Routes>
-
-  {/* If NOT Home → Summary at Bottom */}
-  {!isHome && (
-    <PortfolioSummary refreshTrigger={refreshTrigger} />
-  )}
-
-</div>
       </div>
     </div>
   );
