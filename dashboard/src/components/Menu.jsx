@@ -36,19 +36,18 @@ const Menu = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
 
-    if (FRONTEND_URL) {
-      window.location.href = `${FRONTEND_URL}/login`;
-    } else {
-      window.location.href = "/";
-    }
-  };
+const handleLogout = () => {
+  // Clear all stored auth data
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  localStorage.removeItem("email");
+
+  // Redirect to frontend landing page in SAME TAB
+  window.location.href = FRONTEND_URL || "https://trade-nova-eight.vercel.app";
+};
 
   const menuItems = [
     { name: "Dashboard", path: "/" },
