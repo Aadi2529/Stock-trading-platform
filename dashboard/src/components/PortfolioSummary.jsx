@@ -111,7 +111,6 @@ const PortfolioSummary = ({ refreshTrigger }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <h1>Heelooo Lorem ipsum dolor sit Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi quisquam sed illum corrupti incidunt laborum nulla, quas quasi! Amet atque assumenda velit architecto tempora iure corporis, optio ea accusamus voluptatibus.</h1>
       {/* Wallet */}
       <SummaryCard
         title="Wallet Balance"
