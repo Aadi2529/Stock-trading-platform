@@ -88,11 +88,11 @@ const Dashboard = () => {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
+          {/* If Home → Summary at Top */}
+          {isHome && <PortfolioSummary refreshTrigger={refreshTrigger} />}
           {/* Routed Content */}
           <Routes>
             <Route path="/" element={<Summary />} />
-          {/* If Home → Summary at Top */}
-          {isHome && <PortfolioSummary refreshTrigger={refreshTrigger} />}
             <Route
               path="orders"
               element={<Orders refreshTrigger={refreshTrigger} />}
