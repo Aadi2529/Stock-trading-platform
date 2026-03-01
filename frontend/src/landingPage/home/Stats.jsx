@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Stats = () => {
   return (
     <section className="py-24 bg-white">
@@ -55,19 +57,19 @@ const Stats = () => {
             />
 
             <div className="flex justify-center lg:justify-end gap-8 flex-wrap">
-              <a
-                href="/dashboard"
+              <Link
+                to="/login"
                 className="text-red-500 font-medium hover:underline hover:translate-x-1 transition"
               >
                 Explore Dashboard →
-              </a>
+              </Link>
 
-              <a
-                href="/about"
+              <Link
+                to="/about"
                 className="text-red-500 font-medium hover:underline hover:translate-x-1 transition"
               >
                 Learn About TradeNova →
-              </a>
+              </Link>
             </div>
           </div>
 

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ProfitCalculator = () => {
+  const navigate = useNavigate();
   const [accountSize, setAccountSize] = useState(1000);
   const [profitRate, setProfitRate] = useState(0.5);
 
@@ -74,7 +76,7 @@ const ProfitCalculator = () => {
                 <span className="text-sm font-medium"> /Month</span>
               </div>
 
-              <button className="border border-red-500 text-red-500 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition">
+              <button onClick={()=>navigate("/login")} className="border border-red-500 text-red-500 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition">
                 START TRADING
               </button>
             </div>

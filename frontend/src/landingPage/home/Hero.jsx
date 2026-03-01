@@ -3,10 +3,10 @@ import CountUp from "react-countup";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 import bannerImg from "../../assets/bannerImg.jpg";
-
-import { useEffect } from "react";
+import {useNavigate} from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -72,7 +72,7 @@ const Hero = () => {
           </h1>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-full shadow-lg">
+            <button onClick={()=>navigate("/login")} className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-full shadow-lg">
               Start Trading
             </button>
           </div>
