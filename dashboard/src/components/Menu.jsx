@@ -3,51 +3,24 @@ import { NavLink } from "react-router-dom";
 
 const Menu = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("User");
   const [userDisplay, setUserDisplay] = useState("U");
 
-  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
-
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    let userObj = null;
+    const username = localStorage.getItem("username");
 
-    if (storedUser) {
-      try {
-        userObj = JSON.parse(storedUser);
-      } catch (e) {
-        console.error("Error parsing user object:", e);
-      }
-    }
-
-    // Fallback
-    if (!userObj) {
-      const username = localStorage.getItem("username");
-      const email = localStorage.getItem("email");
-      if (username || email) {
-        userObj = { username, email };
-      }
-    }
-
-    if (userObj) {
-      const name = userObj.username || userObj.email || "User";
-      setUserName(name);
-      setUserDisplay(name.substring(0, 2).toUpperCase());
+    if (username) {
+      setUserName(username);
+      setUserDisplay(username.substring(0, 2).toUpperCase());
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
+    localStorage.clear();
 
-    if (FRONTEND_URL) {
-      window.location.href = `${FRONTEND_URL}/login`;
-    } else {
-      window.location.href = "/";
-    }
+    // Redirect back to main frontend login
+    window.location.href =
+      "https://trade-nova-eight.vercel.app/login";
   };
 
   const menuItems = [
@@ -62,7 +35,13 @@ const Menu = () => {
 
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <img src="/logo.png" alt="TradeNova Logo" className="w-10" />
+        {/* <img src="/logo.png" alt="TradeNova Logo" className="w-10" /> */}
+                  <div
+            onClick={() => navigate("/")}
+            className="text-xl font-bold tracking-wide cursor-pointer"
+          >
+            TradeNova
+          </div>
       </div>
 
       {/* Menu Items */}
