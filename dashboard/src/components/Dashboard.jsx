@@ -65,13 +65,13 @@ const Dashboard = () => {
       )}
 
       {/* 🔥 Sidebar */}
-      {/* <div
+      <div
         className={`fixed lg:static top-0 left-0 h-full z-50 w-72 bg-[#111827] border-r border-gray-800 transform transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <Watchlist onTradeComplete={triggerRefresh} />
-      </div> */}
+      </div>
 
       {/* 🔥 Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -82,8 +82,7 @@ const Dashboard = () => {
           {isHome && <PortfolioSummary refreshTrigger={refreshTrigger} />}
           {/* Routed Content */}
           <Routes>
-            <Route path="/" element={<Watchlist onTradeComplete={triggerRefresh}  />} />
-            
+            <Route path="/" element={<Summary />} />
             <Route
               path="orders"
               element={<Orders refreshTrigger={refreshTrigger} />}
