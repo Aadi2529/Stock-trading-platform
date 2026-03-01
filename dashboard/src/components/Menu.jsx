@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, NavLink } from "react-router-dom";
 
 const Menu = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [userName, setUserName] = useState("User");
   const [userDisplay, setUserDisplay] = useState("U");
 
+  const dropdownRef = useRef(null);
   const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
   useEffect(() => {
@@ -15,12 +17,9 @@ const Menu = () => {
     if (storedUser) {
       try {
         userObj = JSON.parse(storedUser);
-      } catch (e) {
-        console.error("Error parsing user object:", e);
-      }
+      } catch {}
     }
 
-    // Fallback
     if (!userObj) {
       const username = localStorage.getItem("username");
       const email = localStorage.getItem("email");
@@ -36,18 +35,21 @@ const Menu = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-const handleLogout = () => {
-  // Clear all stored auth data
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("userId");
-  localStorage.removeItem("username");
-  localStorage.removeItem("email");
-
-  // Redirect to frontend landing page in SAME TAB
-  window.location.href = FRONTEND_URL || "https://trade-nova-eight.vercel.app";
-};
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href =
+      FRONTEND_URL || "https://trade-nova-eight.vercel.app";
+  };
 
   const menuItems = [
     { name: "Dashboard", path: "/" },
@@ -57,16 +59,21 @@ const handleLogout = () => {
   ];
 
   return (
-    <div className="w-full flex items-center justify-between">
-
+    <div className="flex items-center gap-6 relative">
       {/* Logo */}
-      <div className="flex items-center gap-3">
-        <img src="/logo.png" alt="TradeNova Logo" className="w-10" />
-      </div>
+      <Link to="/" className="flex items-center gap-2 group">
+        <img
+          src="/logo.png"
+          alt="TradeNova Logo"
+          className="w-8 sm:w-9 md:w-10 transition-transform duration-300 group-hover:scale-105"
+        />
+        <span className="hidden sm:block text-sm font-semibold text-white tracking-wide">
+          TradeNova
+        </span>
+      </Link>
 
-      {/* Menu Items */}
-      <div className="flex items-center gap-8">
-
+      {/* Desktop Nav */}
+      <div className="hidden md:flex items-center gap-8">
         {menuItems.map((item, index) => (
           <NavLink
             key={index}
@@ -85,36 +92,82 @@ const handleLogout = () => {
 
         <div className="h-6 w-px bg-gray-700"></div>
 
-        {/* Profile */}
-        <div className="relative">
+        {/* Desktop Profile */}
+        <div className="relative" ref={dropdownRef}>
           <div
-            className="flex items-center gap-2 cursor-pointer"
             onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+            className="flex items-center gap-3 cursor-pointer hover:bg-gray-800/60 px-3 py-2 rounded-lg transition"
           >
-            <div className="w-10 h-10 bg-blue-500 text-white text-xs flex items-center justify-center rounded-full font-semibold">
+            <div className="w-9 h-9 bg-blue-500 text-white text-xs flex items-center justify-center rounded-full font-semibold">
               {userDisplay}
             </div>
             <p className="text-sm text-gray-300">{userName}</p>
           </div>
 
-          {isProfileDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2 z-50">
-              <div className="px-4 py-2 border-b border-gray-700">
-                <p className="text-sm text-gray-400">
-                  Logged in as {userName}
-                </p>
-              </div>
+          <div
+            className={`absolute right-0 mt-3 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-xl transition-all duration-200 ${
+              isProfileDropdownOpen
+                ? "opacity-100 translate-y-0 visible"
+                : "opacity-0 -translate-y-2 invisible"
+            }`}
+          >
+            <div className="px-4 py-3 border-b border-gray-700">
+              <p className="text-xs text-gray-500">Logged in as</p>
+              <p className="text-sm text-gray-200 truncate">{userName}</p>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="md:hidden text-gray-400 hover:text-white transition ml-auto"
+      >
+        ☰
+      </button>
+
+      {/* Mobile Drawer */}
+      {isMobileOpen && (
+        <div className="absolute top-14 right-0 bg-gray-900 border border-gray-700 rounded-xl shadow-xl w-64 p-5 md:hidden">
+          {/* Profile inside mobile */}
+          <div className="flex items-center gap-3 pb-4 border-b border-gray-700">
+            <div className="w-9 h-9 bg-blue-500 text-white text-xs flex items-center justify-center rounded-full font-semibold">
+              {userDisplay}
+            </div>
+            <div>
+              <p className="text-sm text-gray-200">{userName}</p>
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-700 transition"
+                className="text-xs text-red-400 hover:underline"
               >
                 Logout
               </button>
             </div>
-          )}
-        </div>
+          </div>
 
-      </div>
+          {/* Nav Links */}
+          <div className="mt-4 space-y-3">
+            {menuItems.map((item, index) => (
+              <NavLink
+                key={index}
+                to={item.path}
+                onClick={() => setIsMobileOpen(false)}
+                className="block text-sm text-gray-300 hover:text-white transition"
+              >
+                {item.name}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

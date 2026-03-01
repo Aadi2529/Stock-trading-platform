@@ -26,61 +26,108 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    if (!BACKEND_URL) {
-      toast.error("Backend URL not configured");
-      console.error("VITE_BACKEND_URL is missing");
+  //   if (!BACKEND_URL) {
+  //     toast.error("Backend URL not configured");
+  //     console.error("VITE_BACKEND_URL is missing");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await axios.post(`${BACKEND_URL}/login`, inputValue, {
+  //       withCredentials: true,
+  //     });
+
+  //     const { success, message, token, user } = response.data;
+
+  //     if (!success) {
+  //       toast.error(message || "Login failed");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     toast.success(message || "Login successful");
+
+  //     // Store basic data locally (optional but useful)
+  //     if (user) {
+  //       localStorage.setItem("userId", user.id);
+  //       localStorage.setItem("username", user.username);
+  //       localStorage.setItem("email", user.email);
+  //     }
+
+  //     const redirectUrl = DASHBOARD_URL || "http://localhost:5174";
+
+  //     const queryParams = `?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
+  //     setTimeout(() => {
+  //       const dashboardBase = "https://trade-nova-dashboard.vercel.app";
+
+  //       const finalUrl = `${dashboardBase}?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
+  //       window.open(finalUrl, "_blank"); // open in new tab
+
+  //       // optionally stay on home page or redirect to login/home
+  //       window.location.href = "/";
+  //     }, 1000);
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     toast.error(error?.response?.data?.message || "Login failed");
+  //   }
+
+  //   setLoading(false);
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!BACKEND_URL) {
+    toast.error("Backend URL not configured");
+    console.error("VITE_BACKEND_URL is missing");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await axios.post(`${BACKEND_URL}/login`, inputValue, {
+      withCredentials: true,
+    });
+
+    const { success, message, token, user } = response.data;
+
+    if (!success) {
+      toast.error(message || "Login failed");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
+    toast.success(message || "Login successful");
 
-    try {
-      const response = await axios.post(`${BACKEND_URL}/login`, inputValue, {
-        withCredentials: true,
-      });
-
-      const { success, message, token, user } = response.data;
-
-      if (!success) {
-        toast.error(message || "Login failed");
-        setLoading(false);
-        return;
-      }
-
-      toast.success(message || "Login successful");
-
-      // Store basic data locally (optional but useful)
-      if (user) {
-        localStorage.setItem("userId", user.id);
-        localStorage.setItem("username", user.username);
-        localStorage.setItem("email", user.email);
-      }
-
-      const redirectUrl = DASHBOARD_URL || "http://localhost:5174";
-
-      const queryParams = `?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
-
-      setTimeout(() => {
-        const dashboardBase = "https://trade-nova-dashboard.vercel.app";
-
-        const finalUrl = `${dashboardBase}?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
-
-        window.open(finalUrl, "_blank"); // open in new tab
-
-        // optionally stay on home page or redirect to login/home
-        window.location.href = "/";
-      }, 1000);
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error(error?.response?.data?.message || "Login failed");
+    if (user) {
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("username", user.username);
+      localStorage.setItem("email", user.email);
     }
 
-    setLoading(false);
-  };
+    const dashboardBase = import.meta.env.VITE_DASHBOARD_URL || "http://localhost:5174";
 
+    const finalUrl = `${dashboardBase}?token=${token}&userId=${user?.id}&username=${encodeURIComponent(user?.username || "")}`;
+
+    setTimeout(() => {
+      window.open(finalUrl, "_blank");
+      window.location.href = "/";
+    }, 1000);
+
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error(error?.response?.data?.message || "Login failed");
+  }
+
+  setLoading(false);
+};
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#f8fafc] pt-24 pb-20">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 p-10">
