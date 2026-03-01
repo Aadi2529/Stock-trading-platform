@@ -89,7 +89,7 @@ const Dashboard = () => {
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
           {/* Portfolio Summary */}
-          {/* <PortfolioSummary refreshTrigger={refreshTrigger} /> */}
+          <PortfolioSummary refreshTrigger={refreshTrigger} />
 
           {/* Routed Content */}
           <Routes>
