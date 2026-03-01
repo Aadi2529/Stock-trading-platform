@@ -79,11 +79,11 @@ const Menu = () => {
 
       {/* LEFT SIDE - Logo */}
       <Link to="/" className="flex items-center gap-2 group">
-        <img
+        {/* <img
           src="/logo.png"
           alt="TradeNova Logo"
           className="w-8 sm:w-9 md:w-10 transition-transform duration-300 group-hover:scale-105"
-        />
+        /> */}
         <span className="hidden sm:block text-sm font-semibold text-white tracking-wide">
           TradeNova
         </span>
