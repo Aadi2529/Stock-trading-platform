@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, Routes, useNavigate, useLocation, Link } from "react-router-dom";
 
 import Summary from "./Summary";
 import Orders from "./Orders";
@@ -14,11 +13,12 @@ const Dashboard = () => {
   const { refreshTrigger, triggerRefresh } = useTradeRefresh();
   const navigate = useNavigate();
   const location = useLocation();
+
   const isHome = location.pathname === "/";
+  const isWatchlist = location.pathname === "/watchlist";
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  /* ================= AUTH ================= */
 
-  // 🔐 Auth Handling
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
@@ -27,9 +27,7 @@ const Dashboard = () => {
     const usernameFromUrl = params.get("username");
     const emailFromUrl = params.get("email");
 
-    if (tokenFromUrl) {
-      localStorage.setItem("token", tokenFromUrl);
-    }
+    if (tokenFromUrl) localStorage.setItem("token", tokenFromUrl);
 
     if (userIdFromUrl || usernameFromUrl || emailFromUrl) {
       const userData = {
@@ -37,7 +35,6 @@ const Dashboard = () => {
         username: usernameFromUrl,
         email: emailFromUrl,
       };
-
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("userId", userIdFromUrl);
       localStorage.setItem("username", usernameFromUrl);
@@ -48,50 +45,82 @@ const Dashboard = () => {
     }
 
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      navigate("/login");
-    }
+    if (!token) navigate("/login");
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex relative">
-      {/* 🔥 Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div
-          onClick={() => setIsSidebarOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-        />
-      )}
+    <div className="min-h-screen bg-[#0f172a] text-white flex">
 
-      {/* 🔥 Sidebar */}
-      <div
-        className={`fixed lg:static top-0 left-0 h-full z-50 w-72 bg-[#111827] border-r border-gray-800 transform transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
-      >
+      {/* ================= DESKTOP SIDEBAR ================= */}
+      <div className="hidden lg:block w-72 border-r border-gray-800 bg-[#111827]">
         <Watchlist onTradeComplete={triggerRefresh} />
       </div>
 
-      {/* 🔥 Main Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Scrollable Content */}
+      {/* ================= MAIN ================= */}
+      <div className="flex-1 flex flex-col">
+
+        {/* ================= MOBILE TOP NAV ================= */}
+        <div className="lg:hidden flex justify-between items-center p-4 border-b border-gray-800">
+          <Link
+            to="/"
+            className={`text-sm ${isHome ? "text-blue-400" : "text-gray-400"}`}
+          >
+            Summary
+          </Link>
+
+          <Link
+            to="/watchlist"
+            className={`text-sm ${isWatchlist ? "text-blue-400" : "text-gray-400"}`}
+          >
+            Watchlist
+          </Link>
+
+          <Link
+            to="/orders"
+            className="text-sm text-gray-400"
+          >
+            Orders
+          </Link>
+        </div>
+
+        {/* ================= CONTENT ================= */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
-          {/* If Home → Summary at Top */}
-          {isHome && <PortfolioSummary refreshTrigger={refreshTrigger} />}
-          {/* Routed Content */}
           <Routes>
-            <Route path="/" element={<Summary />} />
+            {/* Home */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <PortfolioSummary refreshTrigger={refreshTrigger} />
+                  <Summary />
+                </>
+              }
+            />
+
+            {/* Mobile Watchlist Page */}
+            <Route
+              path="/watchlist"
+              element={
+                <Watchlist onTradeComplete={triggerRefresh} />
+              }
+            />
+
             <Route
               path="orders"
               element={<Orders refreshTrigger={refreshTrigger} />}
             />
+
             <Route
               path="holdings"
               element={<Holdings refreshTrigger={refreshTrigger} />}
             />
-            <Route path="positions" element={<Positions />} />
+
+            <Route
+              path="positions"
+              element={<Positions />}
+            />
+
             <Route
               path="*"
               element={
@@ -102,8 +131,6 @@ const Dashboard = () => {
             />
           </Routes>
 
-          {/* If NOT Home → Summary at Bottom */}
-          {!isHome && <PortfolioSummary refreshTrigger={refreshTrigger} />}
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { X, Plus, Minus } from "lucide-react";
-import ReactDOM from "react-dom";
 
 const SellActionWindow = ({
   symbol,
@@ -119,7 +118,7 @@ const SellActionWindow = ({
 
   /* ================= UI ================= */
 
-  return ReactDOM.createPortal(
+  return (
     <div
       onMouseDown={handleOutsideClick}
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
