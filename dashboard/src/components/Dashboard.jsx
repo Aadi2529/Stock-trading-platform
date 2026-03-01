@@ -70,20 +70,20 @@ const Dashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        <Watchlist onTradeComplete={triggerRefresh} />
+        {/* <Watchlist onTradeComplete={triggerRefresh} /> */}
       </div>
 
       {/* 🔥 Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Toggle Button */}
-        <div className="lg:hidden p-4 border-b border-gray-800">
+        {/* <div className="lg:hidden p-4 border-b border-gray-800">
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="text-gray-400 hover:text-white transition"
           >
             ☰ Open Watchlist
           </button>
-        </div>
+        </div> */}
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
