@@ -1,6 +1,5 @@
-import { useEffect, useState, useMemo, memo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Star } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -9,285 +8,167 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import BuyActionWindow from "./BuyActionWindow";
-import SellActionWindow from "./SellActionWindow";
 
 const Watchlist = ({ onTradeComplete }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
   const [market, setMarket] = useState({});
-  const [prevMarket, setPrevMarket] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeBuy, setActiveBuy] = useState(null);
-  const [activeSell, setActiveSell] = useState(null);
-  const [favorites, setFavorites] = useState([]);
-  const [focusedStock, setFocusedStock] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  /* ================= MARKET FETCH ================= */
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState("BUY");
 
   useEffect(() => {
-    if (!BACKEND_URL) return;
-
-    let isMounted = true;
-
     const fetchMarket = async () => {
-      try {
-        const res = await axios.get(`${BACKEND_URL}/trade/market`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+      const res = await axios.get(`${BACKEND_URL}/trade/market`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-        if (!isMounted) return;
+      setMarket(res.data || {});
 
-        setPrevMarket(market);
-        setMarket(res.data || {});
-        setLoading(false);
-
-        if (!focusedStock && Object.keys(res.data).length > 0) {
-          setFocusedStock(Object.keys(res.data)[0]);
-        }
-      } catch (err) {
-        if (!isMounted) return;
-        setError("Failed to load market");
-        setLoading(false);
+      if (!selectedStock && Object.keys(res.data).length > 0) {
+        setSelectedStock(Object.keys(res.data)[0]);
       }
     };
 
     fetchMarket();
-    const interval = setInterval(fetchMarket, 3000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [BACKEND_URL, token]);
-
-  /* ================= FAVORITES ================= */
-
-  useEffect(() => {
-    const saved = localStorage.getItem("favoritesStocks");
-    if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
-  const toggleFavorite = (symbol) => {
-    const updated = favorites.includes(symbol)
-      ? favorites.filter((s) => s !== symbol)
-      : [...favorites, symbol];
+  const price = market[selectedStock] || 0;
 
-    setFavorites(updated);
-    localStorage.setItem("favoritesStocks", JSON.stringify(updated));
-  };
-
-  /* ================= FILTER ================= */
-
-  const filteredStocks = useMemo(() => {
-    return Object.entries(market).filter(([symbol]) =>
-      symbol.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [market, searchTerm]);
-
-  /* ================= UI STATES ================= */
-
-  if (loading) {
-    return <div className="p-6 text-gray-400">Loading market...</div>;
-  }
-
-  if (error) {
-    return <div className="p-6 text-red-400">{error}</div>;
-  }
-
-  const currentPrice = market[focusedStock] || 0;
+  const chartData = useMemo(() => {
+    return Object.entries(market).map(([s, p]) => ({
+      name: s,
+      value: p,
+    }));
+  }, [market]);
 
   return (
-    <div className="w-full h-full bg-gradient-to-b from-[#0f172a] to-[#0b1220] text-white p-6 overflow-y-auto space-y-8">
+    <div className="h-screen bg-black text-white flex overflow-hidden">
 
-      {/* Search */}
-      <div>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search stocks"
-          className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
-        />
-      </div>
+      {/* LEFT STOCK LIST */}
+      <div className="w-60 bg-[#0b0f14] border-r border-gray-800 overflow-y-auto">
 
-      {/* Stock List */}
-      <div className="space-y-3">
-        {filteredStocks.map(([symbol, price]) => {
-          const prev = prevMarket[symbol];
-          const isUp = prev ? price >= prev : true;
-          const percent = prev
-            ? (((price - prev) / prev) * 100).toFixed(2)
-            : "0.00";
+        <div className="p-4 border-b border-gray-800 font-semibold">
+          Watchlist
+        </div>
 
-          return (
-            <MemoWatchListItem
-              key={symbol}
-              symbol={symbol}
-              price={price}
-              percent={percent}
-              isUp={isUp}
-              isFavorite={favorites.includes(symbol)}
-              isFocused={focusedStock === symbol}
-              onFocus={() => setFocusedStock(symbol)}
-              onToggleFavorite={() => toggleFavorite(symbol)}
-            />
-          );
-        })}
-      </div>
-
-      {/* ================= TRADING SECTION ================= */}
-
-      {focusedStock && (
-        <div className="bg-[#111827] rounded-xl p-6 border border-gray-700 space-y-6">
-
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-xl font-semibold">
-                {focusedStock}
-              </h3>
-              <p className="text-green-400 text-sm">
-                ₹{currentPrice.toFixed(2)}
-              </p>
+        {Object.entries(market).map(([symbol, p]) => (
+          <div
+            key={symbol}
+            onClick={() => setSelectedStock(symbol)}
+            className={`px-4 py-3 cursor-pointer border-b border-gray-800 hover:bg-[#111827] ${
+              selectedStock === symbol ? "bg-[#111827]" : ""
+            }`}
+          >
+            <div className="flex justify-between">
+              <span>{symbol}</span>
+              <span className="text-green-400 text-sm">
+                ₹{p.toFixed(2)}
+              </span>
             </div>
           </div>
+        ))}
 
-          {/* Chart */}
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={Object.entries(market).map(([s, p]) => ({
-                  name: s,
-                  value: p,
-                }))}
-              >
-                <XAxis dataKey="name" hide />
-                <YAxis hide />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#22d3ee"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+      </div>
+
+      {/* CENTER CHART */}
+      <div className="flex-1 flex flex-col">
+
+        {/* Header */}
+        <div className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-[#0b0f14]">
+          <div>
+            <h1 className="text-xl font-bold">
+              {selectedStock}
+            </h1>
+            <p className="text-green-400 text-sm">
+              ₹{price.toFixed(2)}
+            </p>
           </div>
-
-          {/* Buy / Sell Buttons */}
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setActiveBuy(focusedStock)}
-              className="bg-green-500 hover:bg-green-600 py-3 rounded-lg font-semibold transition"
-            >
-              Buy
-            </button>
-
-            <button
-              onClick={() => setActiveSell(focusedStock)}
-              className="bg-red-500 hover:bg-red-600 py-3 rounded-lg font-semibold transition"
-            >
-              Sell
-            </button>
-          </div>
-
-        </div>
-      )}
-
-      {/* Modals */}
-      {activeBuy && (
-        <BuyActionWindow
-          symbol={activeBuy}
-          price={market[activeBuy]}
-          onClose={() => setActiveBuy(null)}
-          onSuccess={onTradeComplete}
-        />
-      )}
-
-      {activeSell && (
-        <SellActionWindow
-          symbol={activeSell}
-          price={market[activeSell]}
-          onClose={() => setActiveSell(null)}
-          onSuccess={onTradeComplete}
-        />
-      )}
-    </div>
-  );
-};
-
-/* ================= OPTIMIZED ITEM ================= */
-
-const WatchListItem = ({
-  symbol,
-  price,
-  percent,
-  isUp,
-  isFavorite,
-  isFocused,
-  onFocus,
-  onToggleFavorite,
-}) => {
-  return (
-    <div
-      onClick={onFocus}
-      className={`bg-[#1e293b] p-4 rounded-lg border transition cursor-pointer ${
-        isFocused
-          ? "border-blue-500 bg-blue-500/10"
-          : "border-gray-700 hover:border-blue-600"
-      }`}
-    >
-      <div className="flex justify-between items-center">
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFavorite();
-            }}
-          >
-            <Star
-              size={16}
-              className={
-                isFavorite
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-500"
-              }
-            />
-          </button>
-
-          <p className="font-semibold text-sm">{symbol}</p>
         </div>
 
-        <div className="text-right">
-          <p
-            className={`text-xs ${
-              isUp ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {isUp ? "+" : ""}
-            {percent}%
-          </p>
-
-          <p
-            className={`font-semibold text-sm ${
-              isUp ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            ₹{price?.toFixed(2)}
-          </p>
+        {/* Chart */}
+        <div className="flex-1 p-6 bg-black">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <XAxis dataKey="name" hide />
+              <YAxis hide />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#22d3ee"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
       </div>
+
+      {/* RIGHT TRADE PANEL */}
+      <div className="w-80 bg-[#0b0f14] border-l border-gray-800 p-6 space-y-6">
+
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab("BUY")}
+            className={`flex-1 py-2 ${
+              activeTab === "BUY"
+                ? "bg-green-600"
+                : "bg-gray-700"
+            }`}
+          >
+            Buy
+          </button>
+          <button
+            onClick={() => setActiveTab("SELL")}
+            className={`flex-1 py-2 ${
+              activeTab === "SELL"
+                ? "bg-red-600"
+                : "bg-gray-700"
+            }`}
+          >
+            Sell
+          </button>
+        </div>
+
+        <div>
+          <label className="text-sm text-gray-400">
+            Quantity
+          </label>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) =>
+              setQuantity(Number(e.target.value))
+            }
+            className="w-full mt-2 bg-black border border-gray-600 rounded-lg px-3 py-2"
+          />
+        </div>
+
+        <div className="text-sm text-gray-400">
+          Current Price: ₹{price.toFixed(2)}
+        </div>
+
+        <div className="text-sm text-gray-400">
+          Total: ₹{(price * quantity).toFixed(2)}
+        </div>
+
+        <button
+          className={`w-full py-3 rounded-lg font-semibold ${
+            activeTab === "BUY"
+              ? "bg-green-500 hover:bg-green-600"
+              : "bg-red-500 hover:bg-red-600"
+          }`}
+        >
+          {activeTab} {selectedStock}
+        </button>
+
+      </div>
+
     </div>
   );
 };
-
-const MemoWatchListItem = memo(WatchListItem);
 
 export default Watchlist;
