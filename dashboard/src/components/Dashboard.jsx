@@ -14,33 +14,48 @@ const Dashboard = () => {
 
   const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
-useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
-    const token = params.get("token");
-    const userId = params.get("userId");
-    const username = params.get("username");
+    const tokenFromUrl = params.get("token");
+    const userIdFromUrl = params.get("userId");
+    const usernameFromUrl = params.get("username");
+    const emailFromUrl = params.get("email");
 
-    if (token) localStorage.setItem("token", token);
-    if (userId) localStorage.setItem("userId", userId);
-    if (username) localStorage.setItem("username", username);
+    // ✅ Store token
+    if (tokenFromUrl) {
+      localStorage.setItem("token", tokenFromUrl);
+    }
 
-    if (userId || username) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: userId,
-          username: username,
-        })
+    // ✅ Store user data
+    if (userIdFromUrl || usernameFromUrl || emailFromUrl) {
+      const userData = {
+        id: userIdFromUrl,
+        username: usernameFromUrl,
+        email: emailFromUrl,
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("userId", userIdFromUrl);
+      localStorage.setItem("username", usernameFromUrl);
+    }
+
+    // ✅ Clean URL (remove token from query)
+    if (window.location.search) {
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
       );
     }
 
-    // Clean URL after storing data
-    if (window.location.search) {
-      window.history.replaceState({}, document.title, "/");
-    }
+    const token = localStorage.getItem("token");
 
-  }, []);
+    // ❌ If no token → redirect to frontend login
+    if (!token) {
+      window.location.href = `${FRONTEND_URL}/login`;
+    }
+  }, [FRONTEND_URL]);
 
   return (
     <div className="w-full h-screen bg-[#0f172a] text-white flex">
