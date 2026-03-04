@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { X, Plus, Minus } from "lucide-react";
+import { createPortal } from "react-dom";
 
 const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
   const [quantity, setQuantity] = useState(1);
@@ -35,7 +36,7 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
       document.body.style.overflow = "auto";
       window.removeEventListener("keydown", handleKey);
     };
-  }, [quantity]);
+  }, []);
 
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -75,22 +76,16 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
           quantity,
         },
         {
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : {},
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
 
-      toast.success(
-        `Bought ${quantity} ${symbol} at ₹${res.data.price}`
-      );
+      toast.success(`Bought ${quantity} ${symbol} at ₹${res.data.price}`);
 
       onSuccess?.();
       onClose();
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Order failed"
-      );
+      toast.error(err.response?.data?.message || "Order failed");
     } finally {
       setLoading(false);
     }
@@ -98,7 +93,7 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
 
   /* ================= UI ================= */
 
-  return (
+  const modalUI = (
     <div
       onMouseDown={handleOutsideClick}
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
@@ -106,7 +101,7 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
       <div
         ref={modalRef}
         onMouseDown={(e) => e.stopPropagation()}
-        className="bg-[#1e293b] border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-6 shadow-2xl transform transition-all duration-200 scale-100"
+        className="bg-[#1e293b] border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-6 shadow-2xl"
       >
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -121,17 +116,13 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
           </button>
         </div>
 
-        {/* Quantity Section */}
+        {/* Quantity */}
         <div>
-          <label className="text-sm text-gray-400">
-            Quantity
-          </label>
+          <label className="text-sm text-gray-400">Quantity</label>
 
           <div className="flex items-center mt-2 bg-[#0f172a] border border-gray-600 rounded-lg overflow-hidden">
             <button
-              onClick={() =>
-                setQuantity((q) => Math.max(1, q - 1))
-              }
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               className="px-3 py-2 text-gray-400 hover:text-white"
             >
               <Minus size={16} />
@@ -142,9 +133,7 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) =>
-                setQuantity(Number(e.target.value))
-              }
+              onChange={(e) => setQuantity(Number(e.target.value))}
               className="w-full text-center bg-transparent outline-none py-2"
             />
 
@@ -170,9 +159,7 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
           </div>
 
           {errorMsg && (
-            <p className="text-xs text-red-400 mt-2">
-              {errorMsg}
-            </p>
+            <p className="text-xs text-red-400 mt-2">{errorMsg}</p>
           )}
         </div>
 
@@ -216,6 +203,8 @@ const BuyActionWindow = ({ symbol, price, onClose, onSuccess }) => {
       </div>
     </div>
   );
+
+  return createPortal(modalUI, document.body);
 };
 
 export default BuyActionWindow;

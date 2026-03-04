@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { X, Plus, Minus } from "lucide-react";
+import { createPortal } from "react-dom";
 
 const SellActionWindow = ({
   symbol,
@@ -41,7 +42,7 @@ const SellActionWindow = ({
       document.body.style.overflow = "auto";
       window.removeEventListener("keydown", handleKey);
     };
-  }, [quantity]);
+  }, []);
 
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -93,24 +94,18 @@ const SellActionWindow = ({
           quantity,
         },
         {
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : {},
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
 
       toast.success(
-        `Sold ${quantity} ${symbol} at ₹${Number(
-          res.data.price
-        ).toFixed(2)}`
+        `Sold ${quantity} ${symbol} at ₹${Number(res.data.price).toFixed(2)}`
       );
 
       onSuccess?.();
       onClose();
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Order failed"
-      );
+      toast.error(err.response?.data?.message || "Order failed");
     } finally {
       setLoading(false);
     }
@@ -118,7 +113,7 @@ const SellActionWindow = ({
 
   /* ================= UI ================= */
 
-  return (
+  const modalUI = (
     <div
       onMouseDown={handleOutsideClick}
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
@@ -141,17 +136,13 @@ const SellActionWindow = ({
           </button>
         </div>
 
-        {/* Quantity Section */}
+        {/* Quantity */}
         <div>
-          <label className="text-sm text-gray-400">
-            Quantity
-          </label>
+          <label className="text-sm text-gray-400">Quantity</label>
 
           <div className="flex items-center mt-2 bg-[#0f172a] border border-gray-600 rounded-lg overflow-hidden">
             <button
-              onClick={() =>
-                setQuantity((q) => Math.max(1, q - 1))
-              }
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               className="px-3 py-2 text-gray-400 hover:text-white"
             >
               <Minus size={16} />
@@ -163,18 +154,14 @@ const SellActionWindow = ({
               min="1"
               max={maxQuantity || undefined}
               value={quantity}
-              onChange={(e) =>
-                setQuantity(Number(e.target.value))
-              }
+              onChange={(e) => setQuantity(Number(e.target.value))}
               className="w-full text-center bg-transparent outline-none py-2"
             />
 
             <button
               onClick={() =>
                 setQuantity((q) =>
-                  maxQuantity
-                    ? Math.min(maxQuantity, q + 1)
-                    : q + 1
+                  maxQuantity ? Math.min(maxQuantity, q + 1) : q + 1
                 )
               }
               className="px-3 py-2 text-gray-400 hover:text-white"
@@ -189,11 +176,7 @@ const SellActionWindow = ({
               <button
                 key={q}
                 onClick={() =>
-                  setQuantity(
-                    maxQuantity
-                      ? Math.min(q, maxQuantity)
-                      : q
-                  )
+                  setQuantity(maxQuantity ? Math.min(q, maxQuantity) : q)
                 }
                 className="text-xs px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 transition"
               >
@@ -218,9 +201,7 @@ const SellActionWindow = ({
           )}
 
           {errorMsg && (
-            <p className="text-xs text-red-400 mt-2">
-              {errorMsg}
-            </p>
+            <p className="text-xs text-red-400 mt-2">{errorMsg}</p>
           )}
         </div>
 
@@ -233,9 +214,7 @@ const SellActionWindow = ({
 
           <div className="flex justify-between text-lg font-bold text-white">
             <span>Total</span>
-            <span className="text-red-400">
-              ₹{total.toFixed(2)}
-            </span>
+            <span className="text-red-400">₹{total.toFixed(2)}</span>
           </div>
         </div>
 
@@ -270,6 +249,8 @@ const SellActionWindow = ({
       </div>
     </div>
   );
+
+  return createPortal(modalUI, document.body);
 };
 
 export default SellActionWindow;
