@@ -1,14 +1,17 @@
 import { useEffect, useRef } from "react";
-import { createChart } from "lightweight-charts";
+import {
+  createChart,
+  LineSeries
+} from "lightweight-charts";
 
 const TradeChart = ({ data }) => {
 
-  const chartContainerRef = useRef();
+  const chartRef = useRef();
 
   useEffect(() => {
 
-    const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
+    const chart = createChart(chartRef.current, {
+      width: chartRef.current.clientWidth,
       height: 400,
       layout: {
         background: { color: "#0f172a" },
@@ -18,9 +21,6 @@ const TradeChart = ({ data }) => {
         vertLines: { color: "#1f2937" },
         horzLines: { color: "#1f2937" },
       },
-      crosshair: {
-        mode: 1,
-      },
       rightPriceScale: {
         borderColor: "#374151",
       },
@@ -29,7 +29,7 @@ const TradeChart = ({ data }) => {
       },
     });
 
-    const lineSeries = chart.addLineSeries({
+    const lineSeries = chart.addSeries(LineSeries, {
       color: "#3b82f6",
       lineWidth: 2,
     });
@@ -38,7 +38,7 @@ const TradeChart = ({ data }) => {
 
     const handleResize = () => {
       chart.applyOptions({
-        width: chartContainerRef.current.clientWidth,
+        width: chartRef.current.clientWidth,
       });
     };
 
@@ -53,11 +53,10 @@ const TradeChart = ({ data }) => {
 
   return (
     <div
-      ref={chartContainerRef}
+      ref={chartRef}
       className="w-full h-[400px]"
     />
   );
-
 };
 
 export default TradeChart;
