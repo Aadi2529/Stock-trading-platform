@@ -15,6 +15,7 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
+import AnalyticsModal from "./AnalyticsModal";
 
 ChartJS.register(ArcElement, ChartTooltip, Legend);
 
@@ -422,53 +423,53 @@ const WatchListItem = ({
 
 };
 
-/* ================= ANALYTICS ================= */
+// /* ================= ANALYTICS ================= */
 
-const AnalyticsModal = ({ symbol, price, onClose }) => {
+// const AnalyticsModal = ({ symbol, price, onClose }) => {
 
-  return (
+//   return (
 
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+//     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
-      <div className="bg-[#1e293b] border border-gray-700 rounded-xl w-96 p-6 space-y-4">
+//       <div className="bg-[#1e293b] border border-gray-700 rounded-xl w-96 p-6 space-y-4">
 
-        <div className="flex justify-between items-center">
+//         <div className="flex justify-between items-center">
 
-          <h3 className="text-xl font-semibold text-blue-400">
-            {symbol} Analytics
-          </h3>
+//           <h3 className="text-xl font-semibold text-blue-400">
+//             {symbol} Analytics
+//           </h3>
 
-          <button onClick={onClose}>
-            <X size={20} />
-          </button>
+//           <button onClick={onClose}>
+//             <X size={20} />
+//           </button>
 
-        </div>
+//         </div>
 
-        <div className="bg-[#0f172a] p-4 rounded-lg">
+//         <div className="bg-[#0f172a] p-4 rounded-lg">
 
-          <p className="text-gray-400 text-sm">
-            Current Price
-          </p>
+//           <p className="text-gray-400 text-sm">
+//             Current Price
+//           </p>
 
-          <p className="text-2xl font-bold text-green-400">
-            ₹{price?.toFixed(2)}
-          </p>
+//           <p className="text-2xl font-bold text-green-400">
+//             ₹{price?.toFixed(2)}
+//           </p>
 
-        </div>
+//         </div>
 
-        <button
-          onClick={onClose}
-          className="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg"
-        >
-          Close
-        </button>
+//         <button
+//           onClick={onClose}
+//           className="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg"
+//         >
+//           Close
+//         </button>
 
-      </div>
+//       </div>
 
-    </div>
+//     </div>
 
-  );
+//   );
 
-};
+// };
 
 export default Watchlist;
