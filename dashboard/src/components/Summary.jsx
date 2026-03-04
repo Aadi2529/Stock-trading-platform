@@ -28,6 +28,7 @@ const Summary = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { selectedSymbol } = useContext(ChartContext);
 
   /* ================= FETCH DATA ================= */
 

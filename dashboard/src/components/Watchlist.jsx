@@ -32,6 +32,7 @@ const Watchlist = ({ onTradeComplete }) => {
   const [focusedStock, setFocusedStock] = useState(null);
 
   const stockListRef = useRef(null);
+  const { setSelectedSymbol } = useContext(ChartContext);
 
   /* ================= REAL TIME MARKET ================= */
 
