@@ -10,6 +10,8 @@ import {
 } from "recharts";
 
 import TradeChart from "./TradeChart";
+import { useContext } from "react";
+import { ChartContext } from "../context/ChartContext";
 
 const Summary = () => {
 
@@ -147,13 +149,10 @@ const Summary = () => {
 
   /* ================= TRADING CHART DATA ================= */
 
-  const tradingChartData = [
-    { time: "2024-01-01", value: 100 },
-    { time: "2024-01-02", value: 105 },
-    { time: "2024-01-03", value: 103 },
-    { time: "2024-01-04", value: 110 },
-    { time: "2024-01-05", value: 108 },
-  ];
+const tradingChartData = Array.from({ length: 20 }, (_, i) => ({
+  time: `2024-01-${i + 1}`,
+  value: Math.random() * 100 + 100,
+}));
 
   /* ================= UI ================= */
 
@@ -233,7 +232,7 @@ const Summary = () => {
       <div className="bg-[#111827] p-6 rounded-xl border border-gray-800">
 
         <h3 className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
-          Market Chart
+         {selectedSymbol} Market Chart
         </h3>
 
         <TradeChart data={tradingChartData} />
