@@ -61,13 +61,7 @@ const Summary = () => {
 
     fetchData();
     
-    const chartData = [
-    { time: "2024-01-01", value: 100 },
-    { time: "2024-01-02", value: 105 },
-    { time: "2024-01-03", value: 103 },
-    { time: "2024-01-04", value: 110 },
-    { time: "2024-01-05", value: 108 },
-  ];
+
     return () => {
       isMounted = false;
     };
@@ -275,6 +269,13 @@ const SummaryCard = ({
   subValue,
   highlight = "text-white",
 }) => {
+      const chartData = [
+    { time: "2024-01-01", value: 100 },
+    { time: "2024-01-02", value: 105 },
+    { time: "2024-01-03", value: 103 },
+    { time: "2024-01-04", value: 110 },
+    { time: "2024-01-05", value: 108 },
+  ];
   return (
     <div className="bg-[#111827] p-5 rounded-xl border border-gray-800 hover:border-blue-500 transition">
       <p className="text-gray-400 text-sm">{title}</p>
