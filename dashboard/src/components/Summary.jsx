@@ -8,41 +8,42 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import TradeChart from "./TradeChart";
 
 const Summary = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
+  
   const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Trader";
   const token = localStorage.getItem("token");
-
+  
   const [holdings, setHoldings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [wallet, setWallet] = useState(null);
   const [market, setMarket] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     if (!userId || !BACKEND_URL) return;
-
+    
     let isMounted = true;
-
+    
     const fetchData = async () => {
       try {
         setLoading(true);
-
+        
         const headers = token
-          ? { Authorization: `Bearer ${token}` }
-          : {};
-
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+        
         const [h, o, w, m] = await Promise.all([
           axios.get(`${BACKEND_URL}/trade/holdings/${userId}`, { headers }),
           axios.get(`${BACKEND_URL}/trade/orders/${userId}`, { headers }),
           axios.get(`${BACKEND_URL}/trade/wallet/${userId}`, { headers }),
           axios.get(`${BACKEND_URL}/trade/market`, { headers }),
         ]);
-
+        
         if (!isMounted) return;
 
         setHoldings(h.data || []);
@@ -59,7 +60,14 @@ const Summary = () => {
     };
 
     fetchData();
-
+    
+    const chartData = [
+    { time: "2024-01-01", value: 100 },
+    { time: "2024-01-02", value: 105 },
+    { time: "2024-01-03", value: 103 },
+    { time: "2024-01-04", value: 110 },
+    { time: "2024-01-05", value: 108 },
+  ];
     return () => {
       isMounted = false;
     };
@@ -281,6 +289,7 @@ const SummaryCard = ({
           </span>
         )}
       </div>
+      <TradeChart data={chartData} />
     </div>
   );
 };
